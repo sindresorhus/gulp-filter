@@ -7,7 +7,7 @@ module.exports = function (pattern) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
 
 	if (!Array.isArray(pattern) && typeof pattern !== 'function') {
-		throw new gutil.PluginError('gulp-filter', '`pattern` should be a string, array or function');
+		throw new gutil.PluginError('gulp-filter', '`pattern` should be a string, array, or function');
 	}
 
 	return through(function (file) {
@@ -32,7 +32,7 @@ module.exports = function (pattern) {
 			return this.queue(file);
 		}
 
-		file.gulpFilter = file.filtered || [];
+		file.gulpFilter = file.gulpFilter || [];
 		file.gulpFilter.push(file);
 	});
 };
