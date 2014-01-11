@@ -1,0 +1,40 @@
+{
+  "name": "gulp-filter",
+  "version": "0.0.0",
+  "description": "Filter files in a vinyl stream",
+  "license": "MIT",
+  "repository": "sindresorhus/gulp-filter",
+  "author": {
+    "name": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "http://sindresorhus.com"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "gulpplugin",
+    "filter",
+    "ignore",
+    "file",
+    "files",
+    "match",
+    "minimatch",
+    "glob",
+    "globbing"
+  ],
+  "dependencies": {
+    "gulp-util": "~2.2.0",
+    "through": "~2.3.4",
+    "minimatch": "~0.2.14"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
+}
