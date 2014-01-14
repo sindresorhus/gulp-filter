@@ -24,7 +24,7 @@ var filter = require('gulp-filter');
 gulp.task('default', function () {
 	gulp.src('src/*.js')
 		// filter a subset of the files
-		.pipe(filter('!src/vendor'))
+		.pipe(filter('src/vendor'))
 		// run them through a plugin
 		.pipe(jscs())
 		// bring back the previously filtered out files (optional)
