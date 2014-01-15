@@ -43,6 +43,28 @@ describe('filter()', function () {
 		stream.write(new gutil.File({path: 'ignored.js'}));
 		stream.end();
 	});
+
+	it('should filter files with negate pattern and leading dot', function (cb) {
+		var stream = filter(['!*.json', '!*rc']);
+		var buffer = [];
+
+		stream.on('data', function (file) {
+			buffer.push(file);
+		});
+
+		stream.on('end', function () {
+			assert.equal(buffer.length, 2);
+			assert.equal(buffer[0].path, 'included.js');
+			assert.equal(buffer[1].path, 'app.js');
+			cb();
+		});
+
+		stream.write(new gutil.File({path: 'included.js'}));
+		stream.write(new gutil.File({path: 'package.json'}));
+		stream.write(new gutil.File({path: '.jshintrc'}));
+		stream.write(new gutil.File({path: 'app.js'}));
+		stream.end();
+	});
 });
 
 describe('filter.end()', function () {

@@ -16,7 +16,8 @@ module.exports = function (pattern) {
 			return cb();
 		}
 
-		var match = typeof pattern === 'function' ? pattern(file) : multimatch(file.path, pattern).length > 0;
+		var match = typeof pattern === 'function' ? pattern(file) :
+		            multimatch(file.path, pattern, {dot: true}).length > 0;
 
 		if (match) {
 			this.push(file);
