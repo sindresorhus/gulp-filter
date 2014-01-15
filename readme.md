@@ -42,7 +42,7 @@ gulp.task('default', function () {
 
 Type: `String`|`Array`|`Function`
 
-Accepts a string/array with globbing patterns which are run through [minimatch](https://github.com/isaacs/minimatch).
+Accepts a string/array with globbing patterns which are run through [multimatch](https://github.com/sindresorhus/multimatch).
 
 If you supply a function you'll get a [vinyl file object](https://github.com/wearefractal/vinyl#file) as the first argument and you're expected to return true/false whether to include the file:
 
@@ -51,7 +51,6 @@ filter(function (file) {
 	return /unicorns/.test(file.path);
 });
 ```
-
 
 ### filter.end()
 

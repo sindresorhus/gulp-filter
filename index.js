@@ -1,7 +1,7 @@
 'use strict';
 var gutil = require('gulp-util');
 var through = require('through');
-var minimatch = require('minimatch');
+var multimatch = require('multimatch');
 
 module.exports = function (pattern) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
@@ -15,18 +15,7 @@ module.exports = function (pattern) {
 			return this.emit('error', new PluginError('gulp-filter', 'Streaming not supported'));
 		}
 
-		var match = false;
-
-		if (typeof pattern === 'function') {
-			match = pattern(file);
-		} else {
-			for (var i = 0; i < pattern.length; i++) {
-				if (minimatch(file.path, pattern[i])) {
-					match = true;
-					break;
-				}
-			}
-		}
+		var match = typeof pattern === 'function' ? pattern(file) : multimatch(file.path, pattern).length > 0;
 
 		if (match) {
 			return this.queue(file);
