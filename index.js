@@ -1,6 +1,6 @@
 'use strict';
 var gutil = require('gulp-util');
-var through = require('through');
+var through = require('through2');
 var multimatch = require('multimatch');
 
 module.exports = function (pattern) {
@@ -10,34 +10,39 @@ module.exports = function (pattern) {
 		throw new gutil.PluginError('gulp-filter', '`pattern` should be a string, array, or function');
 	}
 
-	return through(function (file) {
+	return through.obj(function (file, enc, cb) {
 		if (file.isStream()) {
-			return this.emit('error', new PluginError('gulp-filter', 'Streaming not supported'));
+			this.emit('error', new PluginError('gulp-filter', 'Streaming not supported'));
+			return cb();
 		}
 
 		var match = typeof pattern === 'function' ? pattern(file) : multimatch(file.path, pattern).length > 0;
 
 		if (match) {
-			return this.queue(file);
+			this.push(file);
+			return cb();
 		}
 
 		file.gulpFilter = file.gulpFilter || [];
 		file.gulpFilter.push(file);
+		cb();
 	});
 };
 
 module.exports.end = function () {
-	return through(function (file) {
+	return through.obj(function (file, enc, cb) {
 		if (file.isStream()) {
-			return this.emit('error', new PluginError('gulp-filter', 'Streaming not supported'));
+			this.emit('error', new PluginError('gulp-filter', 'Streaming not supported'));
+			return cb();
 		}
 
 		// put back previously filtered out files
 		if (file.gulpFilter) {
-			file.gulpFilter.forEach(function (file) {this.queue(file)}, this);
+			file.gulpFilter.forEach(function (file) {this.push(file)}, this);
 			file.gulpFilter.length = 0;
 		}
 
-		this.queue(file);
+		this.push(file);
+		cb()
 	});
 };
