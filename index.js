@@ -17,7 +17,7 @@ module.exports = function (pattern) {
 		}
 
 		var match = typeof pattern === 'function' ? pattern(file) :
-		            multimatch(file.path, pattern, {dot: true}).length > 0;
+		            multimatch(file.relative, pattern, {dot: true}).length > 0;
 
 		if (match) {
 			this.push(file);

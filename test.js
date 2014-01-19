@@ -14,12 +14,20 @@ describe('filter()', function () {
 
 		stream.on('end', function () {
 			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].path, 'included.js');
+			assert.equal(buffer[0].relative, 'included.js');
 			cb();
 		});
 
-		stream.write(new gutil.File({path: 'included.js'}));
-		stream.write(new gutil.File({path: 'ignored.js'}));
+		stream.write(new gutil.File({
+			base: __dirname,
+			path: __dirname + '/included.js'
+		}));
+
+		stream.write(new gutil.File({
+			base: __dirname,
+			path: __dirname + '/ignored.js'
+		}));
+
 		stream.end();
 	});
 
