@@ -20,12 +20,12 @@ describe('filter()', function () {
 
 		stream.write(new gutil.File({
 			base: __dirname,
-			path: __dirname + '/included.js'
+			path: 'included.js'
 		}));
 
 		stream.write(new gutil.File({
 			base: __dirname,
-			path: __dirname + '/ignored.js'
+			path: 'ignored.js'
 		}));
 
 		stream.end();
@@ -53,7 +53,7 @@ describe('filter()', function () {
 	});
 
 	it('should filter files with negate pattern and leading dot', function (cb) {
-		var stream = filter(['!*.json', '!*rc']);
+		var stream = filter(['*', '!*.json', '!*rc']);
 		var buffer = [];
 
 		stream.on('data', function (file) {
