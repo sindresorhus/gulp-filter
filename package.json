@@ -30,11 +30,11 @@
     "globbing"
   ],
   "dependencies": {
-    "gulp-util": "~2.2.0",
     "through2": "~0.4.0",
-    "multimatch": "~0.1.0"
+    "gulp-match": "~0.0.2"
   },
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "*",
+    "gulp-util": "~2.2.12"
   }
 }
