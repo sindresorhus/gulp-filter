@@ -3,8 +3,9 @@ var gutil = require('gulp-util');
 var through = require('through2');
 var multimatch = require('multimatch');
 
-module.exports = function (pattern) {
+module.exports = function (pattern, options) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
+	options = options || {};
 
 	if (!Array.isArray(pattern) && typeof pattern !== 'function') {
 		throw new gutil.PluginError('gulp-filter', '`pattern` should be a string, array, or function');
@@ -17,7 +18,7 @@ module.exports = function (pattern) {
 		}
 
 		var match = typeof pattern === 'function' ? pattern(file) :
-		            multimatch(file.relative, pattern, {dot: true}).length > 0;
+		            multimatch(file.relative, pattern, options).length > 0;
 
 		if (match) {
 			this.push(file);

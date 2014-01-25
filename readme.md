@@ -36,7 +36,7 @@ gulp.task('default', function () {
 
 ## API
 
-### filter(pattern)
+### filter(pattern, options)
 
 #### pattern
 
@@ -51,6 +51,14 @@ filter(function (file) {
 	return /unicorns/.test(file.path);
 });
 ```
+
+#### options
+
+Type: `Object`
+
+Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
+
+*NOTE*: If you need to match files beginning with a dot (.), you need to supply the `dot: true` options.
 
 ### filter.end()
 
