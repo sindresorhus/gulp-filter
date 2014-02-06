@@ -19,16 +19,18 @@ npm install --save-dev gulp-filter
 ```js
 var gulp = require('gulp');
 var jscs = require('gulp-jscs');
-var filter = require('gulp-filter');
+var gulpFilter = require('gulp-filter');
+
+var filter = gulpFilter('!src/vendor');
 
 gulp.task('default', function () {
 	gulp.src('src/*.js')
 		// filter a subset of the files
-		.pipe(filter('!src/vendor'))
+		.pipe(filter)
 		// run them through a plugin
 		.pipe(jscs())
 		// bring back the previously filtered out files (optional)
-		.pipe(filter.end())
+		.pipe(filter.restore())
 		.pipe(gulp.dest('dist'));
 });
 ```
@@ -52,9 +54,12 @@ filter(function (file) {
 });
 ```
 
-### filter.end()
+Returns a stream.Transform
 
-Resets the filter and brings back the previously filtered out files.
+
+### stream.restore()
+
+Brings back the previously filtered out files.
 
 
 ## License

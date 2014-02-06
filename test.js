@@ -75,26 +75,55 @@ describe('filter()', function () {
 	});
 });
 
-describe('filter.end()', function () {
+describe('filter.restore()', function () {
 	it('should bring back the previously filtered files', function (cb) {
-		var stream = filter.end();
+		var stream = filter('*.json');
 		var buffer = [];
-		var ignoredFile = new gutil.File({path: 'ignored.js'});
-		var fakeFile = new gutil.File({path: 'new.js'});
-		fakeFile.gulpFilter = [ignoredFile];
 
-		stream.on('data', function (file) {
+    	var completeStream = stream.pipe(stream.restore());
+		completeStream.on('data', function (file) {
 			buffer.push(file);
 		});
 
-		stream.on('end', function () {
-			assert.equal(buffer[0].path, 'ignored.js');
-			assert.equal(buffer[1].path, 'new.js');
+		completeStream.on('end', function () {
+			assert.equal(buffer.length, 3);
+			assert.equal(buffer[0].path, 'app.js');
+			assert.equal(buffer[1].path, 'package.json');
+			assert.equal(buffer[2].path, 'package2.json');
 			cb();
 		});
 
-		stream.write(fakeFile);
+		stream.write(new gutil.File({path: 'package.json'}));
+		stream.write(new gutil.File({path: 'app.js'}));
+		stream.write(new gutil.File({path: 'package2.json'}));
 		stream.end();
+	});
+	
+	it('should work when using multiple filters', function (cb) {
+		var streamFilter1 = filter(['*.json', '*.js']);
+		var streamFilter2 = filter(['*.json']);
+		var buffer = [];
+
+    		var completeStream = streamFilter1
+		      .pipe(streamFilter2)
+		      .pipe(streamFilter1.restore())
+		      .pipe(streamFilter2.restore());
+		completeStream.on('data', function (file) {
+			buffer.push(file);
+		});
+
+		completeStream.on('end', function () {
+			assert.equal(buffer.length, 3);
+			assert.equal(buffer[0].path, 'app.js');
+			assert.equal(buffer[1].path, 'main.css');
+			assert.equal(buffer[2].path, 'package.json');
+			cb();
+		});
+
+		streamFilter1.write(new gutil.File({path: 'package.json'}));
+		streamFilter1.write(new gutil.File({path: 'app.js'}));
+		streamFilter1.write(new gutil.File({path: 'main.css'}));
+		streamFilter1.end();
 	});
 });
 

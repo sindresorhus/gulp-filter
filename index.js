@@ -10,9 +10,11 @@ module.exports = function (pattern) {
 		throw new gutil.PluginError('gulp-filter', '`pattern` should be a string, array, or function');
 	}
 
-	return through.obj(function (file, enc, cb) {
+  	var restoreStream = through.obj();
+  
+	var stream = through.obj(function (file, enc, cb) {
 		if (file.isStream()) {
-			this.emit('error', new PluginError('gulp-filter', 'Streaming not supported'));
+			this.emit('error', new gutil.PluginError('gulp-filter', 'Streaming not supported'));
 			return cb();
 		}
 
@@ -24,26 +26,14 @@ module.exports = function (pattern) {
 			return cb();
 		}
 
-		file.gulpFilter = file.gulpFilter || [];
-		file.gulpFilter.push(file);
+		restoreStream.write(file);
 		cb();
 	});
+  
+	stream.restore = function () {
+		return restoreStream;
+	};
+	
+	return stream;
 };
 
-module.exports.end = function () {
-	return through.obj(function (file, enc, cb) {
-		if (file.isStream()) {
-			this.emit('error', new PluginError('gulp-filter', 'Streaming not supported'));
-			return cb();
-		}
-
-		// put back previously filtered out files
-		if (file.gulpFilter) {
-			file.gulpFilter.forEach(function (file) {this.push(file)}, this);
-			file.gulpFilter.length = 0;
-		}
-
-		this.push(file);
-		cb()
-	});
-};
