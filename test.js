@@ -13,8 +13,10 @@ describe('filter()', function () {
 		});
 
 		stream.on('end', function () {
-			assert.equal(buffer.length, 1);
+			assert.equal(buffer.length, 2);
 			assert.equal(buffer[0].relative, 'included.js');
+			assert.equal(buffer[1].relative, '.gulp-filter');
+			assert(buffer[1].isNull());
 			cb();
 		});
 
@@ -42,8 +44,10 @@ describe('filter()', function () {
 		});
 
 		stream.on('end', function () {
-			assert.equal(buffer.length, 1);
+			assert.equal(buffer.length, 2);
 			assert.equal(buffer[0].path, 'included.js');
+			assert.equal(buffer[1].path, '.gulp-filter');
+			assert(buffer[1].isNull());
 			cb();
 		});
 
@@ -61,9 +65,10 @@ describe('filter()', function () {
 		});
 
 		stream.on('end', function () {
-			assert.equal(buffer.length, 2);
+			assert.equal(buffer.length, 3);
 			assert.equal(buffer[0].path, 'included.js');
 			assert.equal(buffer[1].path, 'app.js');
+			assert(buffer[2].isNull());
 			cb();
 		});
 
@@ -81,19 +86,21 @@ describe('filter.end()', function () {
 		var buffer = [];
 		var ignoredFile = new gutil.File({path: 'ignored.js'});
 		var fakeFile = new gutil.File({path: 'new.js'});
-		fakeFile.gulpFilter = [ignoredFile];
+		var gulpFilterFile = new gutil.File({path: '.gulp-filter'});
+		gulpFilterFile.gulpFilter = [ignoredFile];
 
 		stream.on('data', function (file) {
 			buffer.push(file);
 		});
 
 		stream.on('end', function () {
-			assert.equal(buffer[0].path, 'ignored.js');
-			assert.equal(buffer[1].path, 'new.js');
+			assert.equal(buffer[0].path, 'new.js');
+			assert.equal(buffer[1].path, 'ignored.js');
 			cb();
 		});
 
 		stream.write(fakeFile);
+		stream.write(gulpFilterFile);
 		stream.end();
 	});
 });

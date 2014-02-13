@@ -6,6 +6,8 @@ var multimatch = require('multimatch');
 module.exports = function (pattern) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
 
+	var ignored = [];
+
 	if (!Array.isArray(pattern) && typeof pattern !== 'function') {
 		throw new gutil.PluginError('gulp-filter', '`pattern` should be a string, array, or function');
 	}
@@ -24,8 +26,15 @@ module.exports = function (pattern) {
 			return cb();
 		}
 
-		file.gulpFilter = file.gulpFilter || [];
-		file.gulpFilter.push(file);
+		ignored.push(file);
+		cb();
+	},
+	function(cb) {
+		if(ignored.length > 0) {
+			var file = new gutil.File({path: '.gulp-filter'});
+			file.gulpFilter = ignored;
+			this.push(file);
+		}
 		cb();
 	});
 };
