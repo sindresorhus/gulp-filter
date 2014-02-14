@@ -24,7 +24,7 @@ var gulpFilter = require('gulp-filter');
 var filter = gulpFilter('!src/vendor');
 
 gulp.task('default', function () {
-	gulp.src('src/*.js')
+    gulp.src('src/*.js')
 		// filter a subset of the files
 		.pipe(filter)
 		// run them through a plugin
@@ -33,6 +33,44 @@ gulp.task('default', function () {
 		.pipe(filter.restore())
 		.pipe(gulp.dest('dist'));
 });
+```
+
+## Multiple filters example
+By combining and restoring different filters you can process different sets of files with a single pipeline.
+
+```js
+var gulp = require('gulp');
+var clone = require('gulp-clone');
+var concat = require('gulp-concat');
+var gulpFilter = require('gulp-filter');
+
+var frontPageBundleFilter = gulpFilter(['assets/frontpage/*.js', 'assets/common/*.js']);
+var adminBundleFilter = gulpFilter(['assets/admin/*.js', 'assets/common/*.js']);
+
+var cloneSink1 = clone();
+var cloneSink2 = clone();
+
+gulp.task('default', function () {
+    gulp.src('assets/**/*.js')
+        // select files from the frist bundle
+        .pipe(frontPageBundleFilter)
+        // clone objects streaming through this point
+        .pipe(cloneSink1)
+        .pipe(concat("frontPageBundle.js"))
+        // restore cloned files
+        .pipe(cloneSink1.tap())
+        // restore filtered out files
+        .pipe(frontPageBundleFilter.restore())
+        // select files from the admin bundle
+        .pipe(adminBundleFilter)
+        .pipe(cloneSink2)
+        .pipe(concat("adminBundle.js"))
+        .pipe(cloneSink2.tap())
+        .pipe(adminBundleFilter.restore())
+        //save frontPageBundle.js, adminBundle.js and individual sources
+        .gulp.dest('out/');
+});
+
 ```
 
 
