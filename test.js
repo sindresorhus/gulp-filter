@@ -31,6 +31,33 @@ describe('filter()', function () {
 		stream.end();
 	});
 
+	it('should forward multimatch options', function(cb) {
+		var stream = filter('*.js', {matchBase: true});
+		var buffer = [];
+
+		stream.on('data', function (file) {
+			buffer.push(file);
+		});
+
+		stream.on('end', function () {
+			assert.equal(buffer.length, 1);
+			assert.equal(buffer[0].relative, 'nested/resource.js');
+			cb();
+		});
+
+		stream.write(new gutil.File({
+			base: __dirname,
+			path: __dirname + '/nested/resource.js'
+		}));
+
+		stream.write(new gutil.File({
+			base: __dirname,
+			path: __dirname + '/nested/resource.css'
+		}));
+
+		stream.end();
+	});
+
 	it('should filter using a function', function (cb) {
 		var stream = filter(function (file) {
 			return file.path === 'included.js';
@@ -53,7 +80,7 @@ describe('filter()', function () {
 	});
 
 	it('should filter files with negate pattern and leading dot', function (cb) {
-		var stream = filter(['!*.json', '!*rc']);
+		var stream = filter(['!*.json', '!*rc'], {dot: true});
 		var buffer = [];
 
 		stream.on('data', function (file) {
