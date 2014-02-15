@@ -24,7 +24,7 @@ var gulpFilter = require('gulp-filter');
 var filter = gulpFilter('!src/vendor');
 
 gulp.task('default', function () {
-    gulp.src('src/*.js')
+	gulp.src('src/*.js')
 		// filter a subset of the files
 		.pipe(filter)
 		// run them through a plugin
@@ -40,35 +40,22 @@ By combining and restoring different filters you can process different sets of f
 
 ```js
 var gulp = require('gulp');
-var clone = require('gulp-clone');
+var less = require('gulp-less');
 var concat = require('gulp-concat');
 var gulpFilter = require('gulp-filter');
 
-var frontPageBundleFilter = gulpFilter(['assets/frontpage/*.js', 'assets/common/*.js']);
-var adminBundleFilter = gulpFilter(['assets/admin/*.js', 'assets/common/*.js']);
-
-var cloneSink1 = clone();
-var cloneSink2 = clone();
+var jsFilter = gulpFilter('**/*.js');
+var lessFilter = gulpFilter('**/*.less');
 
 gulp.task('default', function () {
-    gulp.src('assets/**/*.js')
-        // select files from the frist bundle
-        .pipe(frontPageBundleFilter)
-        // clone objects streaming through this point
-        .pipe(cloneSink1)
-        .pipe(concat("frontPageBundle.js"))
-        // restore cloned files
-        .pipe(cloneSink1.tap())
-        // restore filtered out files
-        .pipe(frontPageBundleFilter.restore())
-        // select files from the admin bundle
-        .pipe(adminBundleFilter)
-        .pipe(cloneSink2)
-        .pipe(concat("adminBundle.js"))
-        .pipe(cloneSink2.tap())
-        .pipe(adminBundleFilter.restore())
-        //save frontPageBundle.js, adminBundle.js and individual sources
-        .gulp.dest('out/');
+	gulp.src('assets/**')
+		.pipe(jsFilter)
+		.pipe(concat("bundle.js"))
+		.pipe(jsFilter.restore())
+		.pipe(lessFilter)
+		.pipe(less())
+		.pipe(lessFilter.restore())
+		.pipe(gulp.dest('out/'));
 });
 
 ```
@@ -76,7 +63,7 @@ gulp.task('default', function () {
 
 ## API
 
-### filter(pattern)
+### filter(pattern, options)
 
 #### pattern
 
@@ -91,6 +78,15 @@ filter(function (file) {
 	return /unicorns/.test(file.path);
 });
 ```
+
+#### options
+
+Type: `Object`
+
+Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
+
+*Note:* Set `dot: true` if you need to match files prefixed with a dot (eg. `.gitignore`).
+
 
 Returns a stream.Transform
 
