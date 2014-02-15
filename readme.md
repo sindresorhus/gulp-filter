@@ -58,7 +58,8 @@ Type: `Object`
 
 Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
-*NOTE*: If you need to match files beginning with a dot (.), you need to supply the `dot: true` options.
+*Note:* Set `dot: true` if you need to match files prefixed with a dot (eg. `.gitignore`).
+
 
 ### filter.end()
 
