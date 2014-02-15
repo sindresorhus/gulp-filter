@@ -19,18 +19,45 @@ npm install --save-dev gulp-filter
 ```js
 var gulp = require('gulp');
 var jscs = require('gulp-jscs');
-var filter = require('gulp-filter');
+var gulpFilter = require('gulp-filter');
+
+var filter = gulpFilter('!src/vendor');
 
 gulp.task('default', function () {
 	gulp.src('src/*.js')
 		// filter a subset of the files
-		.pipe(filter('!src/vendor'))
+		.pipe(filter)
 		// run them through a plugin
 		.pipe(jscs())
 		// bring back the previously filtered out files (optional)
-		.pipe(filter.end())
+		.pipe(filter.restore())
 		.pipe(gulp.dest('dist'));
 });
+```
+
+## Multiple filters example
+By combining and restoring different filters you can process different sets of files with a single pipeline.
+
+```js
+var gulp = require('gulp');
+var less = require('gulp-less');
+var concat = require('gulp-concat');
+var gulpFilter = require('gulp-filter');
+
+var jsFilter = gulpFilter('**/*.js');
+var lessFilter = gulpFilter('**/*.less');
+
+gulp.task('default', function () {
+	gulp.src('assets/**')
+		.pipe(jsFilter)
+		.pipe(concat("bundle.js"))
+		.pipe(jsFilter.restore())
+		.pipe(lessFilter)
+		.pipe(less())
+		.pipe(lessFilter.restore())
+		.pipe(gulp.dest('out/'));
+});
+
 ```
 
 
@@ -61,9 +88,12 @@ Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 *Note:* Set `dot: true` if you need to match files prefixed with a dot (eg. `.gitignore`).
 
 
-### filter.end()
+Returns a stream.Transform
 
-Resets the filter and brings back the previously filtered out files.
+
+### stream.restore()
+
+Brings back the previously filtered out files.
 
 
 ## License
