@@ -31,7 +31,7 @@ describe('filter()', function () {
 		stream.end();
 	});
 
-	it('should forward multimatch options', function(cb) {
+	it('should forward multimatch options', function (cb) {
 		var stream = filter('*.js', {matchBase: true});
 		var buffer = [];
 
@@ -107,7 +107,7 @@ describe('filter.restore()', function () {
 		var stream = filter('*.json');
 		var buffer = [];
 
-    	var completeStream = stream.pipe(stream.restore());
+		var completeStream = stream.pipe(stream.restore());
 		completeStream.on('data', function (file) {
 			buffer.push(file);
 		});
@@ -125,16 +125,17 @@ describe('filter.restore()', function () {
 		stream.write(new gutil.File({path: 'package2.json'}));
 		stream.end();
 	});
-	
+
 	it('should work when using multiple filters', function (cb) {
 		var streamFilter1 = filter(['*.json', '*.js']);
 		var streamFilter2 = filter(['*.json']);
 		var buffer = [];
 
-    		var completeStream = streamFilter1
-		      .pipe(streamFilter2)
-		      .pipe(streamFilter1.restore())
-		      .pipe(streamFilter2.restore());
+		var completeStream = streamFilter1
+			.pipe(streamFilter2)
+			.pipe(streamFilter1.restore())
+			.pipe(streamFilter2.restore());
+
 		completeStream.on('data', function (file) {
 			buffer.push(file);
 		});

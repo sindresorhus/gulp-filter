@@ -2,7 +2,7 @@
 
 > Filter files in a [vinyl](https://github.com/wearefractal/vinyl) stream
 
-Enables you to work on a subset of the original files by filtering them using globbing. When you're done and want all the original files back you just call the end function.
+Enables you to work on a subset of the original files by filtering them using globbing. When you're done and want all the original files back you just call the restore method.
 
 
 ## Install
@@ -14,7 +14,9 @@ npm install --save-dev gulp-filter
 ```
 
 
-## Example
+## Examples
+
+### Simple
 
 ```js
 var gulp = require('gulp');
@@ -35,7 +37,8 @@ gulp.task('default', function () {
 });
 ```
 
-## Multiple filters example
+### Multiple filters
+
 By combining and restoring different filters you can process different sets of files with a single pipeline.
 
 ```js
@@ -57,13 +60,14 @@ gulp.task('default', function () {
 		.pipe(lessFilter.restore())
 		.pipe(gulp.dest('out/'));
 });
-
 ```
 
 
 ## API
 
 ### filter(pattern, options)
+
+Returns a [transform stream](http://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore()](#streamrestore) method.
 
 #### pattern
 
@@ -86,9 +90,6 @@ Type: `Object`
 Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
 *Note:* Set `dot: true` if you need to match files prefixed with a dot (eg. `.gitignore`).
-
-
-Returns a stream.Transform
 
 
 ### stream.restore()
