@@ -27,8 +27,7 @@ module.exports = function (pattern, options) {
 			return cb();
 		}
 
-		restoreStream.write(file);
-		cb();
+		restoreStream.write(file, cb);
 	});
 
 	stream.restore = function () {
