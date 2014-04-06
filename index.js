@@ -20,7 +20,7 @@ module.exports = function (pattern, options) {
 		}
 
 		var match = typeof pattern === 'function' ? pattern(file) :
-		            multimatch(file.relative, pattern, options).length > 0;
+					multimatch(file.relative, pattern, options).length > 0;
 
 		if (match) {
 			this.push(file);
@@ -28,16 +28,18 @@ module.exports = function (pattern, options) {
 		}
 
 		restoreStream.write(file, cb);
-	}, function(cb) {
-    restoreStream.end();
-    cb();
+	}, function (cb) {
+		restoreStream.end();
+		cb();
   });
 
 	stream.restore = function (options) {
-	  options = options || {};
-	  if(options.end) {
-	    return restoreStream;
-	  }
+		options = options || {};
+
+		if (options.end) {
+			return restoreStream;
+		}
+
 		return restoreStream.pipe(through.obj(), {end: false});
 	};
 

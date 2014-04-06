@@ -62,9 +62,7 @@ gulp.task('default', function () {
 
 ### Restore as a file source
 
-You could also want to restore filtered files in a different place and use it
- as a standalone source of file. The `end` option allow you to do so.
-
+You may also want to restore filtered files in a different place and use it as a standalone source of files. The `end` option allow you to do so.
 
 ```js
 var gulp = require('gulp');
@@ -81,9 +79,9 @@ gulp.task('default', function () {
 		.pipe(jscs())
 		.pipe(gulp.dest('dist'));
 
-		// use filtered files as a gulp file source
-		filter.restore({end: true})
-  		.pipe(gulp.dest('vendordist'));
+	// use filtered files as a gulp file source
+	filter.restore({end: true})
+  		.pipe(gulp.dest('vendor-dist'));
 });
 ```
 
@@ -121,12 +119,12 @@ Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
 Brings back the previously filtered out files.
 
-#### options
+#### options.end
 
-Type: `Object`
+Type: `boolean`  
+Default: `false`
 
-Set `end: true` if you want restore streams to end by themself when their
- source stream ends.
+Set to `true` if you want restore streams to end when their source stream ends.
 
 
 ## License
