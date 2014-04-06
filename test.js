@@ -153,5 +153,26 @@ describe('filter.restore()', function () {
 		streamFilter1.write(new gutil.File({path: 'main.css'}));
 		streamFilter1.end();
 	});
+
+	it('should end when using the end option', function (cb) {
+		var stream = filter('*.json');
+		var restoreStream = stream.restore({end: true});
+		var buffer = [];
+
+		restoreStream.on('data', function (file) {
+			buffer.push(file);
+		});
+
+		restoreStream.on('end', function () {
+			assert.equal(buffer.length, 1);
+			assert.equal(buffer[0].path, 'app.js');
+			cb();
+		});
+
+		stream.write(new gutil.File({path: 'package.json'}));
+		stream.write(new gutil.File({path: 'app.js'}));
+		stream.write(new gutil.File({path: 'package2.json'}));
+		stream.end();
+	});
 });
 
