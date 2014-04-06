@@ -28,10 +28,17 @@ module.exports = function (pattern, options) {
 		}
 
 		restoreStream.write(file, cb);
-	});
+	}, function(cb) {
+    restoreStream.end();
+    cb();
+  });
 
-	stream.restore = function () {
-		return restoreStream;
+	stream.restore = function (options) {
+	  options = options || {};
+	  if(options.end) {
+	    return restoreStream;
+	  }
+		return restoreStream.pipe(through.obj(), {end: false});
 	};
 
 	return stream;

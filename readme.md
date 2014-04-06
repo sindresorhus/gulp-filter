@@ -60,6 +60,33 @@ gulp.task('default', function () {
 });
 ```
 
+### Restore as a file source
+
+You could also want to restore filtered files in a different place and use it
+ as a standalone source of file. The `end` option allow you to do so.
+
+
+```js
+var gulp = require('gulp');
+var jscs = require('gulp-jscs');
+var gulpFilter = require('gulp-filter');
+
+var filter = gulpFilter('!src/vendor');
+
+gulp.task('default', function () {
+	gulp.src('src/*.js')
+		// filter a subset of the files
+		.pipe(filter)
+		// run them through a plugin
+		.pipe(jscs())
+		.pipe(gulp.dest('dist'));
+
+		// use filtered files as a gulp file source
+		filter.restore({end: true})
+  		.pipe(gulp.dest('vendordist'));
+});
+```
+
 
 ## API
 
@@ -90,9 +117,16 @@ Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 *Note:* Set `dot: true` if you need to match files prefixed with a dot (eg. `.gitignore`).
 
 
-### stream.restore()
+### stream.restore(options)
 
 Brings back the previously filtered out files.
+
+#### options
+
+Type: `Object`
+
+Set `end: true` if you want restore streams to end by themself when their
+ source stream ends.
 
 
 ## License
