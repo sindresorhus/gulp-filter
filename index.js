@@ -14,11 +14,6 @@ module.exports = function (pattern, options) {
 	var restoreStream = through.obj();
 
 	var stream = through.obj(function (file, enc, cb) {
-		if (file.isStream()) {
-			this.emit('error', new gutil.PluginError('gulp-filter', 'Streaming not supported'));
-			return cb();
-		}
-
 		var match = typeof pattern === 'function' ? pattern(file) :
 					multimatch(file.relative, pattern, options).length > 0;
 
@@ -31,7 +26,7 @@ module.exports = function (pattern, options) {
 	}, function (cb) {
 		restoreStream.end();
 		cb();
-  });
+	});
 
 	stream.restore = function (options) {
 		options = options || {};
