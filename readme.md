@@ -21,9 +21,10 @@ var gulp = require('gulp');
 var jscs = require('gulp-jscs');
 var gulpFilter = require('gulp-filter');
 
-var filter = gulpFilter('!src/vendor');
-
 gulp.task('default', function () {
+	// create filter instance inside task function
+	var filter = gulpFilter('!src/vendor');
+
 	return gulp.src('src/*.js')
 		// filter a subset of the files
 		.pipe(filter)
@@ -45,10 +46,10 @@ var less = require('gulp-less');
 var concat = require('gulp-concat');
 var gulpFilter = require('gulp-filter');
 
-var jsFilter = gulpFilter('**/*.js');
-var lessFilter = gulpFilter('**/*.less');
-
 gulp.task('default', function () {
+	var jsFilter = gulpFilter('**/*.js');
+	var lessFilter = gulpFilter('**/*.less');
+
 	gulp.src('assets/**')
 		.pipe(jsFilter)
 		.pipe(concat("bundle.js"))
@@ -69,9 +70,9 @@ var gulp = require('gulp');
 var jscs = require('gulp-jscs');
 var gulpFilter = require('gulp-filter');
 
-var filter = gulpFilter('!src/vendor');
-
 gulp.task('default', function () {
+	var filter = gulpFilter('!src/vendor');
+
 	gulp.src('src/*.js')
 		// filter a subset of the files
 		.pipe(filter)
