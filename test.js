@@ -80,7 +80,7 @@ describe('filter()', function () {
 	});
 
 	it('should filter files with negate pattern and leading dot', function (cb) {
-		var stream = filter(['!*.json', '!*rc'], {dot: true});
+		var stream = filter(['*', '!*.json', '!*rc'], {dot: true});
 		var buffer = [];
 
 		stream.on('data', function (file) {
