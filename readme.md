@@ -23,7 +23,7 @@ var gulpFilter = require('gulp-filter');
 
 gulp.task('default', function () {
 	// create filter instance inside task function
-	var filter = gulpFilter('!src/vendor');
+	var filter = gulpFilter(['*', '!src/vendor']);
 
 	return gulp.src('src/*.js')
 		// filter a subset of the files
@@ -52,7 +52,7 @@ gulp.task('default', function () {
 
 	gulp.src('assets/**')
 		.pipe(jsFilter)
-		.pipe(concat("bundle.js"))
+		.pipe(concat('bundle.js'))
 		.pipe(jsFilter.restore())
 		.pipe(lessFilter)
 		.pipe(less())
@@ -71,7 +71,7 @@ var jscs = require('gulp-jscs');
 var gulpFilter = require('gulp-filter');
 
 gulp.task('default', function () {
-	var filter = gulpFilter('!src/vendor');
+	var filter = gulpFilter(['*', '!src/vendor']);
 
 	gulp.src('src/*.js')
 		// filter a subset of the files
