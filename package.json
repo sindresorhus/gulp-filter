@@ -30,7 +30,7 @@
     "globbing"
   ],
   "dependencies": {
-    "gulp-util": "^2.2.0",
+    "gulp-util": "^3.0.0",
     "multimatch": "^0.3.0",
     "through2": "^0.5.1"
   },
