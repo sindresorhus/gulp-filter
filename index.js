@@ -2,6 +2,7 @@
 var gutil = require('gulp-util');
 var through = require('through2');
 var multimatch = require('multimatch');
+var path = require('path');
 
 module.exports = function (pattern, options) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
@@ -15,7 +16,7 @@ module.exports = function (pattern, options) {
 
 	var stream = through.obj(function (file, enc, cb) {
 		var match = typeof pattern === 'function' ? pattern(file) :
-					multimatch(file.relative, pattern, options).length > 0;
+					multimatch((options.base ? path.relative(options.base, file.path) : file.relative), pattern, options).length > 0;
 
 		if (match) {
 			this.push(file);

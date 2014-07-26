@@ -115,12 +115,19 @@ Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
 *Note:* Set `dot: true` if you need to match files prefixed with a dot (eg. `.gitignore`).
 
+##### `options.base`
 
-### stream.restore(options)
+Type: `string`  
+Default: `undefined`
+
+Some plugins might provide a wrong `base` on the Vinyl file objects. `base` allows you to set a base directory (for example: your application root directory) for all patterns.
+
+
+#### stream.restore(options)
 
 Brings back the previously filtered out files.
 
-#### options.end
+##### `options.end`
 
 Type: `boolean`  
 Default: `false`
