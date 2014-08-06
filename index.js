@@ -29,7 +29,7 @@ module.exports = function (pattern, options) {
 	});
 
 	stream.restore = function (options) {
-		options = options || {};
+		options = options || {};
 
 		if (options.end) {
 			return restoreStream;
