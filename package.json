@@ -1,6 +1,6 @@
 {
   "name": "gulp-filter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Filter files in a vinyl stream",
   "license": "MIT",
   "repository": "sindresorhus/gulp-filter",
