@@ -1,7 +1,7 @@
 'use strict';
 var assert = require('assert');
 var gutil = require('gulp-util');
-var filter = require('./index');
+var filter = require('./');
 
 describe('filter()', function () {
 	it('should filter files', function (cb) {
@@ -175,4 +175,3 @@ describe('filter.restore()', function () {
 		stream.end();
 	});
 });
-

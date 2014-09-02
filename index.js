@@ -18,8 +18,8 @@ module.exports = function (pattern, options) {
 					multimatch(file.relative, pattern, options).length > 0;
 
 		if (match) {
-			this.push(file);
-			return cb();
+			cb(null, file);
+			return;
 		}
 
 		restoreStream.write(file, cb);

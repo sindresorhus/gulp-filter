@@ -7,7 +7,7 @@ Enables you to work on a subset of the original files by filtering them using gl
 
 ## Install
 
-```bash
+```sh
 $ npm install --save-dev gulp-filter
 ```
 
@@ -50,7 +50,7 @@ gulp.task('default', function () {
 	var jsFilter = gulpFilter('**/*.js');
 	var lessFilter = gulpFilter('**/*.less');
 
-	gulp.src('assets/**')
+	return gulp.src('assets/**')
 		.pipe(jsFilter)
 		.pipe(concat('bundle.js'))
 		.pipe(jsFilter.restore())
@@ -73,7 +73,7 @@ var gulpFilter = require('gulp-filter');
 gulp.task('default', function () {
 	var filter = gulpFilter(['*', '!src/vendor']);
 
-	gulp.src('src/*.js')
+	return gulp.src('src/*.js')
 		// filter a subset of the files
 		.pipe(filter)
 		// run them through a plugin
@@ -95,7 +95,7 @@ Returns a [transform stream](http://nodejs.org/api/stream.html#stream_class_stre
 
 #### pattern
 
-Type: `String`|`Array`|`Function`
+Type: `string`, `array`, `function`
 
 Accepts a string/array with globbing patterns which are run through [multimatch](https://github.com/sindresorhus/multimatch).
 
@@ -109,7 +109,7 @@ filter(function (file) {
 
 #### options
 
-Type: `Object`
+Type: `object`
 
 Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
@@ -130,4 +130,4 @@ Set to `true` if you want restore streams to end when their source stream ends.
 
 ## License
 
-[MIT](http://opensource.org/licenses/MIT) © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](http://sindresorhus.com)
