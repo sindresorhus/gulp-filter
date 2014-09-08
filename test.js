@@ -174,4 +174,15 @@ describe('filter.restore()', function () {
 		stream.write(new gutil.File({path: 'package2.json'}));
 		stream.end();
 	});
+
+	it('should work when restore stream is not used', function (cb) {
+		var stream = filter('*.json');
+
+		for (var i = 0; i < stream._writableState.highWaterMark + 1; i++) {
+			stream.write(new gutil.File({path: 'nonmatch.js'}));
+		}
+
+		stream.on('finish', cb);
+		stream.end();
+	});
 });
