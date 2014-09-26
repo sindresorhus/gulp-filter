@@ -73,7 +73,7 @@ var gulpFilter = require('gulp-filter');
 gulp.task('default', function () {
 	var filter = gulpFilter(['*', '!src/vendor']);
 
-	return gulp.src('src/*.js')
+	var stream = gulp.src('src/*.js')
 		// filter a subset of the files
 		.pipe(filter)
 		// run them through a plugin
@@ -83,6 +83,8 @@ gulp.task('default', function () {
 	// use filtered files as a gulp file source
 	filter.restore({end: true})
   		.pipe(gulp.dest('vendor-dist'));
+  		
+  	return stream;
 });
 ```
 
