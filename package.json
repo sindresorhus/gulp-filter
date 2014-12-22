@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "gulp-util": "^3.0.0",
-    "multimatch": "^1.0.1",
+    "multimatch": "^2.0.0",
     "through2": "^0.6.1"
   },
   "devDependencies": {
