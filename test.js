@@ -175,6 +175,35 @@ describe('filter.restore()', function () {
 		stream.end();
 	});
 
+	it('should not end before the restore stream didn\'t end', function (cb) {
+		var stream = filter('*.json');
+		var restoreStream = stream.restore();
+		var buffer = [];
+
+		restoreStream.on('data', function (file) {
+			buffer.push(file);
+			if(1 == buffer.length) {
+				setImmediate(function() {
+					restoreStream.end();
+					setImmediate(function() {
+						stream.write(new gutil.File({path: 'app2.js'}));
+						stream.end();
+					});
+				});
+			}
+		});
+
+		restoreStream.on('end', function () {
+			assert.equal(buffer.length, 2);
+			assert.equal(buffer[0].path, 'app.js');
+			assert.equal(buffer[1].path, 'app2.js');
+			cb();
+		});
+
+		stream.write(new gutil.File({path: 'package.json'}));
+		stream.write(new gutil.File({path: 'app.js'}));
+	});
+
 	it('should work when restore stream is not used', function (cb) {
 		var stream = filter('*.json');
 
