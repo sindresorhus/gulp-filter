@@ -1,4 +1,4 @@
-# [gulp](http://gulpjs.com)-filter [![Build Status](https://travis-ci.org/sindresorhus/gulp-filter.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-filter)
+# gulp-filter [![Build Status](https://travis-ci.org/sindresorhus/gulp-filter.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-filter)
 
 > Filter files in a [vinyl](https://github.com/wearefractal/vinyl) stream
 
@@ -7,7 +7,7 @@ Enables you to work on a subset of the original files by filtering them using gl
 
 ## Install
 
-```sh
+```
 $ npm install --save-dev gulp-filter
 ```
 
