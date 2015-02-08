@@ -25,7 +25,7 @@ module.exports = function (pattern, options) {
 		}
 
 		restoreStream.write(file);
-	  cb();
+		cb();
 	}, function (cb) {
 		restoreStream.end();
 		cb();
@@ -33,6 +33,7 @@ module.exports = function (pattern, options) {
 
 	stream.restore = function (options) {
 		var tmpStream;
+
 		options = options || {};
 
 		if (options.end) {
@@ -40,7 +41,9 @@ module.exports = function (pattern, options) {
 		}
 
 		tmpStream = through.obj();
-		return plexer({objectMode: true},
+
+		return plexer(
+			{objectMode: true},
 			tmpStream,
 			streamqueue({objectMode: true}, restoreStream, tmpStream)
 		);

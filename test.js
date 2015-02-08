@@ -182,10 +182,10 @@ describe('filter.restore()', function () {
 
 		restoreStream.on('data', function (file) {
 			buffer.push(file);
-			if(1 == buffer.length) {
-				setImmediate(function() {
+			if (buffer.length === 1) {
+				setImmediate(function () {
 					restoreStream.end();
-					setImmediate(function() {
+					setImmediate(function () {
 						stream.write(new gutil.File({path: 'app2.js'}));
 						stream.end();
 					});
