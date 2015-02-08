@@ -2,6 +2,8 @@
 var gutil = require('gulp-util');
 var through = require('through2');
 var multimatch = require('multimatch');
+var plexer = require('plexer');
+var streamqueue = require('streamqueue');
 
 module.exports = function (pattern, options) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
@@ -23,20 +25,25 @@ module.exports = function (pattern, options) {
 		}
 
 		restoreStream.write(file);
-	  	cb();
+	  cb();
 	}, function (cb) {
 		restoreStream.end();
 		cb();
 	});
 
 	stream.restore = function (options) {
+		var tmpStream;
 		options = options || {};
 
 		if (options.end) {
 			return restoreStream;
 		}
 
-		return restoreStream.pipe(through.obj(), {end: false});
+		tmpStream = through.obj();
+		return plexer({objectMode: true},
+			tmpStream,
+			streamqueue({objectMode: true}, restoreStream, tmpStream)
+		);
 	};
 
 	return stream;
