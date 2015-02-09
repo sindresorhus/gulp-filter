@@ -3,7 +3,7 @@ var gutil = require('gulp-util');
 var through = require('through2');
 var multimatch = require('multimatch');
 var plexer = require('plexer');
-var streamqueue = require('streamqueue');
+var mergestream = require('merge-stream');
 
 module.exports = function (pattern, options) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
@@ -45,7 +45,7 @@ module.exports = function (pattern, options) {
 		return plexer(
 			{objectMode: true},
 			tmpStream,
-			streamqueue({objectMode: true}, restoreStream, tmpStream)
+			mergestream(restoreStream, tmpStream)
 		);
 	};
 
