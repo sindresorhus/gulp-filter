@@ -204,6 +204,34 @@ describe('filter.restore()', function () {
 		stream.write(new gutil.File({path: 'app.js'}));
 	});
 
+	it('should pass files as they come', function (cb) {
+		var stream = filter('*.json');
+		var restoreStream = stream.restore();
+		var buffer = [];
+
+		restoreStream.on('data', function (file) {
+			buffer.push(file);
+			if (buffer.length === 4) {
+		    assert.equal(buffer[0].path, 'app.js');
+		    assert.equal(buffer[1].path, 'app2.js');
+		    assert.equal(buffer[2].path, 'package.json');
+		    assert.equal(buffer[3].path, 'package2.json');
+		    cb();
+			}
+		});
+
+		restoreStream.on('end', function () {
+		  done(new Error('Not expected to end!'))
+		});
+
+		stream.write(new gutil.File({path: 'package.json'}));
+		stream.write(new gutil.File({path: 'app.js'}));
+		stream.write(new gutil.File({path: 'package2.json'}));
+		stream.write(new gutil.File({path: 'app2.js'}));
+		
+		stream.pipe(restoreStream);
+	});
+
 	it('should work when restore stream is not used', function (cb) {
 		var stream = filter('*.json');
 
