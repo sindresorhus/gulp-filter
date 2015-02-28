@@ -102,12 +102,12 @@ describe('filter()', function () {
 	});
 });
 
-describe('filter.restore()', function () {
+describe('filter.restore', function () {
 	it('should bring back the previously filtered files', function (cb) {
-		var stream = filter('*.json');
+		var stream = filter('*.json', {restore: true});
 		var buffer = [];
 
-		var completeStream = stream.pipe(stream.restore());
+		var completeStream = stream.pipe(stream.restore);
 		completeStream.on('data', function (file) {
 			buffer.push(file);
 		});
@@ -127,14 +127,14 @@ describe('filter.restore()', function () {
 	});
 
 	it('should work when using multiple filters', function (cb) {
-		var streamFilter1 = filter(['*.json', '*.js']);
-		var streamFilter2 = filter(['*.json']);
+		var streamFilter1 = filter(['*.json', '*.js'], {restore: true});
+		var streamFilter2 = filter(['*.json'], {restore: true});
 		var buffer = [];
 
 		var completeStream = streamFilter1
 			.pipe(streamFilter2)
-			.pipe(streamFilter1.restore())
-			.pipe(streamFilter2.restore());
+			.pipe(streamFilter1.restore)
+			.pipe(streamFilter2.restore);
 
 		completeStream.on('data', function (file) {
 			buffer.push(file);
@@ -154,9 +154,9 @@ describe('filter.restore()', function () {
 		streamFilter1.end();
 	});
 
-	it('should end when using the end option', function (cb) {
-		var stream = filter('*.json');
-		var restoreStream = stream.restore({end: true});
+	it('should end when not using the passthough option', function (cb) {
+		var stream = filter('*.json', {restore: true, passthough: false});
+		var restoreStream = stream.restore;
 		var buffer = [];
 
 		restoreStream.on('data', function (file) {
@@ -176,8 +176,8 @@ describe('filter.restore()', function () {
 	});
 
 	it('should not end before the restore stream didn\'t end', function (cb) {
-		var stream = filter('*.json');
-		var restoreStream = stream.restore();
+		var stream = filter('*.json', {restore: true});
+		var restoreStream = stream.restore;
 		var buffer = [];
 
 		restoreStream.on('data', function (file) {
@@ -205,8 +205,8 @@ describe('filter.restore()', function () {
 	});
 
 	it('should pass files as they come', function (cb) {
-		var stream = filter('*.json');
-		var restoreStream = stream.restore();
+		var stream = filter('*.json', {restore: true});
+		var restoreStream = stream.restore;
 		var buffer = [];
 
 		restoreStream.on('data', function (file) {
