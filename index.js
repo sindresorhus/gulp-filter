@@ -12,6 +12,7 @@ module.exports = function (pattern, options) {
 	}
 
 	options.passthrough = (false === options.passthough ? false : true);
+	options.restore = (false === options.restore ? false : true);
   
 	return streamfilter(function gulpFilterFunction(file, enc, cb) {
 		  var match = typeof pattern === 'function' ? pattern(file) :

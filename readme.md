@@ -14,7 +14,7 @@ $ npm install --save-dev gulp-filter
 
 ## Usage
 
-### Simple
+### Common usage
 
 ```js
 var gulp = require('gulp');
@@ -31,7 +31,7 @@ gulp.task('default', function () {
 		// run them through a plugin
 		.pipe(jscs())
 		// bring back the previously filtered out files (optional)
-		.pipe(filter.restore())
+		.pipe(filter.restore)
 		.pipe(gulp.dest('dist'));
 });
 ```
@@ -53,17 +53,41 @@ gulp.task('default', function () {
 	return gulp.src('assets/**')
 		.pipe(jsFilter)
 		.pipe(concat('bundle.js'))
-		.pipe(jsFilter.restore())
+		.pipe(jsFilter.restore)
 		.pipe(lessFilter)
 		.pipe(less())
-		.pipe(lessFilter.restore())
+		.pipe(lessFilter.restore)
 		.pipe(gulp.dest('out/'));
+});
+```
+
+### Filter only
+
+You may want to just filter the stream content:
+
+```js
+var gulp = require('gulp');
+var jscs = require('gulp-jscs');
+var gulpFilter = require('gulp-filter');
+
+gulp.task('default', function () {
+	// create filter instance inside task function
+	var filter = gulpFilter(['*', '!src/vendor'], {restore: false});
+
+	return gulp.src('src/*.js')
+		// filter a subset of the files
+		.pipe(filter)
+		// run them through a plugin
+		.pipe(jscs())
+		.pipe(gulp.dest('dist'));
 });
 ```
 
 ### Restore as a file source
 
-You may also want to restore filtered files in a different place and use it as a standalone source of files. The `end` option allow you to do so.
+You can restore filtered files in a different place and use it as a standalone
+ source of files (ReadableStream). Setting the `passthrough` option to false
+ allows you to do so.
 
 ```js
 var gulp = require('gulp');
@@ -73,7 +97,7 @@ var gulpFilter = require('gulp-filter');
 gulp.task('default', function () {
 	var filter = gulpFilter(['*', '!src/vendor']);
 
-	var stream = gulp.src('src/*.js')
+	var stream = gulp.src('src/*.js', {passthough: false})
 		// filter a subset of the files
 		.pipe(filter)
 		// run them through a plugin
@@ -81,8 +105,7 @@ gulp.task('default', function () {
 		.pipe(gulp.dest('dist'));
 
 	// use filtered files as a gulp file source
-	filter.restore({end: true})
-  		.pipe(gulp.dest('vendor-dist'));
+	filter.restore.pipe(gulp.dest('vendor-dist'));
   		
   	return stream;
 });
@@ -117,17 +140,28 @@ Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
 *Note:* Set `dot: true` if you need to match files prefixed with a dot (eg. `.gitignore`).
 
+#### options.restore
 
-### stream.restore(options)
+Type: `boolean`
+Default: `true`
+
+Restore filtered files.
+
+#### options.passthough
+
+Type: `boolean`
+Default: `true`
+
+When set to `true` filtered files are restored with a PassThrough stream,
+ otherwise, when set to `false`, filtered files are restored as a Readable
+ stream.
+
+When Readable, the stream ends by himself, when PassThrough, you are responsible
+ of the stream end.
+
+### stream.restore
 
 Brings back the previously filtered out files.
-
-#### options.end
-
-Type: `boolean`  
-Default: `false`
-
-Set to `true` if you want restore streams to end when their source stream ends.
 
 
 ## License
