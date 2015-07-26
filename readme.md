@@ -14,52 +14,6 @@ $ npm install --save-dev gulp-filter
 
 ## Usage
 
-### Common usage
-
-```js
-var gulp = require('gulp');
-var jscs = require('gulp-jscs');
-var gulpFilter = require('gulp-filter');
-
-gulp.task('default', function () {
-	// create filter instance inside task function
-	var filter = gulpFilter(['*', '!src/vendor']);
-
-	return gulp.src('src/*.js')
-		// filter a subset of the files
-		.pipe(filter)
-		// run them through a plugin
-		.pipe(jscs())
-		// bring back the previously filtered out files (optional)
-		.pipe(filter.restore)
-		.pipe(gulp.dest('dist'));
-});
-```
-
-### Multiple filters
-
-By combining and restoring different filters you can process different sets of files with a single pipeline.
-
-```js
-var gulp = require('gulp');
-var less = require('gulp-less');
-var concat = require('gulp-concat');
-var gulpFilter = require('gulp-filter');
-
-gulp.task('default', function () {
-	var jsFilter = gulpFilter('**/*.js');
-	var lessFilter = gulpFilter('**/*.less');
-
-	return gulp.src('assets/**')
-		.pipe(jsFilter)
-		.pipe(concat('bundle.js'))
-		.pipe(jsFilter.restore)
-		.pipe(lessFilter)
-		.pipe(less())
-		.pipe(lessFilter.restore)
-		.pipe(gulp.dest('out/'));
-});
-```
 
 ### Filter only
 
@@ -83,6 +37,53 @@ gulp.task('default', function () {
 });
 ```
 
+### Restoring filtered files
+
+```js
+var gulp = require('gulp');
+var jscs = require('gulp-jscs');
+var gulpFilter = require('gulp-filter');
+
+gulp.task('default', function () {
+	// create filter instance inside task function
+	var filter = gulpFilter(['*', '!src/vendor'], {restore: true});
+
+	return gulp.src('src/*.js')
+		// filter a subset of the files
+		.pipe(filter)
+		// run them through a plugin
+		.pipe(jscs())
+		// bring back the previously filtered out files (optional)
+		.pipe(filter.restore)
+		.pipe(gulp.dest('dist'));
+});
+```
+
+### Multiple filters
+
+By combining and restoring different filters you can process different sets of files with a single pipeline.
+
+```js
+var gulp = require('gulp');
+var less = require('gulp-less');
+var concat = require('gulp-concat');
+var gulpFilter = require('gulp-filter');
+
+gulp.task('default', function () {
+	var jsFilter = gulpFilter('**/*.js', {restore: true});
+	var lessFilter = gulpFilter('**/*.less', {restore: true});
+
+	return gulp.src('assets/**')
+		.pipe(jsFilter)
+		.pipe(concat('bundle.js'))
+		.pipe(jsFilter.restore)
+		.pipe(lessFilter)
+		.pipe(less())
+		.pipe(lessFilter.restore)
+		.pipe(gulp.dest('out/'));
+});
+```
+
 ### Restore as a file source
 
 You can restore filtered files in a different place and use it as a standalone
@@ -97,7 +98,7 @@ var gulpFilter = require('gulp-filter');
 gulp.task('default', function () {
 	var filter = gulpFilter(['*', '!src/vendor']);
 
-	var stream = gulp.src('src/*.js', {passthough: false})
+	var stream = gulp.src('src/*.js', {restore: true, passthough: false})
 		// filter a subset of the files
 		.pipe(filter)
 		// run them through a plugin
@@ -106,7 +107,7 @@ gulp.task('default', function () {
 
 	// use filtered files as a gulp file source
 	filter.restore.pipe(gulp.dest('vendor-dist'));
-  		
+
   	return stream;
 });
 ```
@@ -143,7 +144,7 @@ Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 #### options.restore
 
 Type: `boolean`
-Default: `true`
+Default: `false`
 
 Restore filtered files.
 
@@ -158,10 +159,6 @@ When set to `true` filtered files are restored with a PassThrough stream,
 
 When Readable, the stream ends by himself, when PassThrough, you are responsible
  of the stream end.
-
-### stream.restore
-
-Brings back the previously filtered out files.
 
 
 ## License
