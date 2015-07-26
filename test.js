@@ -6,7 +6,7 @@ var filter = require('./');
 describe('filter()', function () {
 
   it('should filter files', function (cb) {
-	  var stream = filter('included.js', {restore: false});
+	  var stream = filter('included.js');
 	  var buffer = [];
 
 	  stream.on('data', function (file) {
@@ -136,7 +136,7 @@ describe('filter()', function () {
 
 describe('filter.restore', function () {
 	it('should bring back the previously filtered files', function (cb) {
-		var stream = filter('*.json');
+		var stream = filter('*.json', {restore: true});
 		var buffer = [];
 		var completeStream = stream.pipe(stream.restore);
 		var completeBuffer = [];
@@ -167,7 +167,7 @@ describe('filter.restore', function () {
 	});
 
 	it('should work when using multiple filters', function (cb) {
-		var streamFilter1 = filter(['*.json', '*.js']);
+		var streamFilter1 = filter(['*.json', '*.js'], {restore: true});
 		var streamFilter2 = filter(['*.json'], {restore: true});
 		var buffer = [];
 
@@ -195,7 +195,7 @@ describe('filter.restore', function () {
 	});
 
 	it('should end when not using the passthough option', function (cb) {
-		var stream = filter('*.json', {passthough: false});
+		var stream = filter('*.json', {restore: true, passthough: false});
 		var restoreStream = stream.restore;
 		var buffer = [];
 
