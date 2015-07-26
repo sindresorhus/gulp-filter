@@ -138,17 +138,25 @@ describe('filter.restore', function () {
 	it('should bring back the previously filtered files', function (cb) {
 		var stream = filter('*.json');
 		var buffer = [];
-
 		var completeStream = stream.pipe(stream.restore);
-		completeStream.on('data', function (file) {
+		var completeBuffer = [];
+
+		stream.on('data', function (file) {
 			buffer.push(file);
 		});
 
+		completeStream.on('data', function (file) {
+			completeBuffer.push(file);
+		});
+
 		completeStream.on('end', function () {
-			assert.equal(buffer.length, 3);
-			assert.equal(buffer[0].path, 'app.js');
-			assert.equal(buffer[1].path, 'package.json');
-			assert.equal(buffer[2].path, 'package2.json');
+			assert.equal(buffer.length, 2);
+			assert.equal(buffer[0].path, 'package.json');
+			assert.equal(buffer[1].path, 'package2.json');
+			assert.equal(completeBuffer.length, 3);
+			assert.equal(completeBuffer[0].path, 'package.json');
+			assert.equal(completeBuffer[1].path, 'app.js');
+			assert.equal(completeBuffer[2].path, 'package2.json');
 			cb();
 		});
 
@@ -174,9 +182,9 @@ describe('filter.restore', function () {
 
 		completeStream.on('end', function () {
 			assert.equal(buffer.length, 3);
-			assert.equal(buffer[0].path, 'app.js');
-			assert.equal(buffer[1].path, 'main.css');
-			assert.equal(buffer[2].path, 'package.json');
+			assert.equal(buffer[0].path, 'package.json');
+			assert.equal(buffer[1].path, 'app.js');
+			assert.equal(buffer[2].path, 'main.css');
 			cb();
 		});
 
@@ -260,7 +268,7 @@ describe('filter.restore', function () {
 		stream.write(new gutil.File({path: 'app.js'}));
 		stream.write(new gutil.File({path: 'package2.json'}));
 		stream.write(new gutil.File({path: 'app2.js'}));
-		
+
 		stream.pipe(restoreStream);
 	});
 

@@ -1,4 +1,5 @@
 'use strict';
+
 var gutil = require('gulp-util');
 var multimatch = require('multimatch');
 var streamfilter = require('streamfilter');
@@ -13,16 +14,16 @@ module.exports = function (pattern, options) {
 
 	options.passthrough = (false === options.passthough ? false : true);
 	options.restore = (false === options.restore ? false : true);
-  
-	return streamfilter(function gulpFilterFunction(file, enc, cb) {
-		  var match = typeof pattern === 'function' ? pattern(file) :
-					  multimatch(file.relative, pattern, options).length > 0;
 
-		  cb(!match);
+	return streamfilter(function gulpFilterFunction(file, enc, cb) {
+    var match = typeof pattern === 'function' ?
+      pattern(file) :
+      multimatch(file.relative, pattern, options).length > 0;
+
+    cb(!match);
   }, {
     objectMode: true,
     passthrough: options.passthrough,
     restore: options.restore
   });
 };
-
