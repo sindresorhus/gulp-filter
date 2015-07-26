@@ -30,7 +30,7 @@
     "globbing"
   ],
   "dependencies": {
-    "gulp-util": "^3.0.0",
+    "gulp-util": "^3.0.6",
     "multimatch": "^2.0.0",
     "streamfilter": "^1.0.1"
   },
