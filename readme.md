@@ -96,9 +96,9 @@ var jscs = require('gulp-jscs');
 var gulpFilter = require('gulp-filter');
 
 gulp.task('default', function () {
-	var filter = gulpFilter(['*', '!src/vendor']);
+	var filter = gulpFilter(['*', '!src/vendor'], {restore: true, passthough: false});
 
-	var stream = gulp.src('src/*.js', {restore: true, passthough: false})
+	var stream = gulp.src('src/*.js')
 		// filter a subset of the files
 		.pipe(filter)
 		// run them through a plugin
