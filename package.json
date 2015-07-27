@@ -30,11 +30,9 @@
     "globbing"
   ],
   "dependencies": {
-    "gulp-util": "^3.0.0",
-    "merge-stream": "^0.1.7",
+    "gulp-util": "^3.0.6",
     "multimatch": "^2.0.0",
-    "plexer": "0.0.3",
-    "through2": "^0.6.1"
+    "streamfilter": "^1.0.1"
   },
   "devDependencies": {
     "mocha": "*"

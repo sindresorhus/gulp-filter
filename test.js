@@ -4,31 +4,63 @@ var gutil = require('gulp-util');
 var filter = require('./');
 
 describe('filter()', function () {
-	it('should filter files', function (cb) {
-		var stream = filter('included.js');
-		var buffer = [];
 
-		stream.on('data', function (file) {
-			buffer.push(file);
-		});
+  it('should filter files', function (cb) {
+	  var stream = filter('included.js');
+	  var buffer = [];
 
-		stream.on('end', function () {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, 'included.js');
-			cb();
-		});
+	  stream.on('data', function (file) {
+		  buffer.push(file);
+	  });
 
-		stream.write(new gutil.File({
-			base: __dirname,
-			path: __dirname + '/included.js'
-		}));
+	  stream.on('end', function () {
+		  assert.equal(buffer.length, 1);
+		  assert.equal(buffer[0].relative, 'included.js');
+		  cb();
+	  });
 
-		stream.write(new gutil.File({
-			base: __dirname,
-			path: __dirname + '/ignored.js'
-		}));
+	  stream.write(new gutil.File({
+		  base: __dirname,
+		  path: __dirname + '/included.js'
+	  }));
 
-		stream.end();
+	  stream.write(new gutil.File({
+		  base: __dirname,
+		  path: __dirname + '/ignored.js'
+	  }));
+
+	  stream.end();
+  });
+
+  describe('with restore set to false', function () {
+
+	  it('should filter files', function (cb) {
+		  var stream = filter('included.js', {restore: false});
+		  var buffer = [];
+
+		  stream.on('data', function (file) {
+			  buffer.push(file);
+		  });
+
+		  stream.on('end', function () {
+			  assert.equal(buffer.length, 1);
+			  assert.equal(buffer[0].relative, 'included.js');
+			  cb();
+		  });
+
+		  stream.write(new gutil.File({
+			  base: __dirname,
+			  path: __dirname + '/included.js'
+		  }));
+
+		  stream.write(new gutil.File({
+			  base: __dirname,
+			  path: __dirname + '/ignored.js'
+		  }));
+
+		  stream.end();
+	  });
+
 	});
 
 	it('should forward multimatch options', function (cb) {
@@ -102,21 +134,29 @@ describe('filter()', function () {
 	});
 });
 
-describe('filter.restore()', function () {
+describe('filter.restore', function () {
 	it('should bring back the previously filtered files', function (cb) {
-		var stream = filter('*.json');
+		var stream = filter('*.json', {restore: true});
 		var buffer = [];
+		var completeStream = stream.pipe(stream.restore);
+		var completeBuffer = [];
 
-		var completeStream = stream.pipe(stream.restore());
-		completeStream.on('data', function (file) {
+		stream.on('data', function (file) {
 			buffer.push(file);
 		});
 
+		completeStream.on('data', function (file) {
+			completeBuffer.push(file);
+		});
+
 		completeStream.on('end', function () {
-			assert.equal(buffer.length, 3);
-			assert.equal(buffer[0].path, 'app.js');
-			assert.equal(buffer[1].path, 'package.json');
-			assert.equal(buffer[2].path, 'package2.json');
+			assert.equal(buffer.length, 2);
+			assert.equal(buffer[0].path, 'package.json');
+			assert.equal(buffer[1].path, 'package2.json');
+			assert.equal(completeBuffer.length, 3);
+			assert.equal(completeBuffer[0].path, 'package.json');
+			assert.equal(completeBuffer[1].path, 'app.js');
+			assert.equal(completeBuffer[2].path, 'package2.json');
 			cb();
 		});
 
@@ -127,14 +167,14 @@ describe('filter.restore()', function () {
 	});
 
 	it('should work when using multiple filters', function (cb) {
-		var streamFilter1 = filter(['*.json', '*.js']);
-		var streamFilter2 = filter(['*.json']);
+		var streamFilter1 = filter(['*.json', '*.js'], {restore: true});
+		var streamFilter2 = filter(['*.json'], {restore: true});
 		var buffer = [];
 
 		var completeStream = streamFilter1
 			.pipe(streamFilter2)
-			.pipe(streamFilter1.restore())
-			.pipe(streamFilter2.restore());
+			.pipe(streamFilter1.restore)
+			.pipe(streamFilter2.restore);
 
 		completeStream.on('data', function (file) {
 			buffer.push(file);
@@ -142,9 +182,9 @@ describe('filter.restore()', function () {
 
 		completeStream.on('end', function () {
 			assert.equal(buffer.length, 3);
-			assert.equal(buffer[0].path, 'app.js');
-			assert.equal(buffer[1].path, 'main.css');
-			assert.equal(buffer[2].path, 'package.json');
+			assert.equal(buffer[0].path, 'package.json');
+			assert.equal(buffer[1].path, 'app.js');
+			assert.equal(buffer[2].path, 'main.css');
 			cb();
 		});
 
@@ -154,9 +194,9 @@ describe('filter.restore()', function () {
 		streamFilter1.end();
 	});
 
-	it('should end when using the end option', function (cb) {
-		var stream = filter('*.json');
-		var restoreStream = stream.restore({end: true});
+	it('should end when not using the passthough option', function (cb) {
+		var stream = filter('*.json', {restore: true, passthough: false});
+		var restoreStream = stream.restore;
 		var buffer = [];
 
 		restoreStream.on('data', function (file) {
@@ -176,8 +216,8 @@ describe('filter.restore()', function () {
 	});
 
 	it('should not end before the restore stream didn\'t end', function (cb) {
-		var stream = filter('*.json');
-		var restoreStream = stream.restore();
+		var stream = filter('*.json', {restore: true});
+		var restoreStream = stream.restore;
 		var buffer = [];
 
 		restoreStream.on('data', function (file) {
@@ -205,8 +245,8 @@ describe('filter.restore()', function () {
 	});
 
 	it('should pass files as they come', function (cb) {
-		var stream = filter('*.json');
-		var restoreStream = stream.restore();
+		var stream = filter('*.json', {restore: true});
+		var restoreStream = stream.restore;
 		var buffer = [];
 
 		restoreStream.on('data', function (file) {
@@ -221,14 +261,14 @@ describe('filter.restore()', function () {
 		});
 
 		restoreStream.on('end', function () {
-		  done(new Error('Not expected to end!'))
+		  done(new Error('Not expected to end!'));
 		});
 
 		stream.write(new gutil.File({path: 'package.json'}));
 		stream.write(new gutil.File({path: 'app.js'}));
 		stream.write(new gutil.File({path: 'package2.json'}));
 		stream.write(new gutil.File({path: 'app2.js'}));
-		
+
 		stream.pipe(restoreStream);
 	});
 
