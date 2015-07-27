@@ -2,7 +2,7 @@
 
 > Filter files in a [vinyl](https://github.com/wearefractal/vinyl) stream
 
-Enables you to work on a subset of the original files by filtering them using globbing. When you're done and want all the original files back you just call the restore method.
+Enables you to work on a subset of the original files by filtering them using globbing. When you're done and want all the original files back you just use the `restore` stream.
 
 
 ## Install
@@ -13,7 +13,6 @@ $ npm install --save-dev gulp-filter
 
 
 ## Usage
-
 
 ### Filter only
 
@@ -26,7 +25,7 @@ var gulpFilter = require('gulp-filter');
 
 gulp.task('default', function () {
 	// create filter instance inside task function
-	var filter = gulpFilter(['*', '!src/vendor'], {restore: false});
+	var filter = gulpFilter(['*', '!src/vendor']);
 
 	return gulp.src('src/*.js')
 		// filter a subset of the files
@@ -86,9 +85,7 @@ gulp.task('default', function () {
 
 ### Restore as a file source
 
-You can restore filtered files in a different place and use it as a standalone
- source of files (ReadableStream). Setting the `passthrough` option to false
- allows you to do so.
+You can restore filtered files in a different place and use it as a standalone source of files (ReadableStream). Setting the `passthrough` option to `false` allows you to do so.
 
 ```js
 var gulp = require('gulp');
@@ -96,7 +93,7 @@ var jscs = require('gulp-jscs');
 var gulpFilter = require('gulp-filter');
 
 gulp.task('default', function () {
-	var filter = gulpFilter(['*', '!src/vendor'], {restore: true, passthough: false});
+	var filter = gulpFilter(['*', '!src/vendor'], {restore: true, passthrough: false});
 
 	var stream = gulp.src('src/*.js')
 		// filter a subset of the files
@@ -108,14 +105,14 @@ gulp.task('default', function () {
 	// use filtered files as a gulp file source
 	filter.restore.pipe(gulp.dest('vendor-dist'));
 
-  	return stream;
+	return stream;
 });
 ```
 
 
 ## API
 
-### filter(pattern, options)
+### filter(pattern, [options])
 
 Returns a [transform stream](http://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore()](#streamrestore) method.
 
@@ -148,17 +145,14 @@ Default: `false`
 
 Restore filtered files.
 
-#### options.passthough
+#### options.passthrough
 
 Type: `boolean`
 Default: `true`
 
-When set to `true` filtered files are restored with a PassThrough stream,
- otherwise, when set to `false`, filtered files are restored as a Readable
- stream.
+When set to `true` filtered files are restored with a PassThrough stream, otherwise, when set to `false`, filtered files are restored as a Readable stream.
 
-When Readable, the stream ends by himself, when PassThrough, you are responsible
- of the stream end.
+When the stream is Readable it ends by itself, but when PassThrough, you are responsible of ending the stream.
 
 
 ## License

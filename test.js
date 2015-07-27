@@ -4,63 +4,60 @@ var gutil = require('gulp-util');
 var filter = require('./');
 
 describe('filter()', function () {
+	it('should filter files', function (cb) {
+		var stream = filter('included.js');
+		var buffer = [];
 
-  it('should filter files', function (cb) {
-	  var stream = filter('included.js');
-	  var buffer = [];
+		stream.on('data', function (file) {
+			buffer.push(file);
+		});
 
-	  stream.on('data', function (file) {
-		  buffer.push(file);
-	  });
+		stream.on('end', function () {
+			assert.equal(buffer.length, 1);
+			assert.equal(buffer[0].relative, 'included.js');
+			cb();
+		});
 
-	  stream.on('end', function () {
-		  assert.equal(buffer.length, 1);
-		  assert.equal(buffer[0].relative, 'included.js');
-		  cb();
-	  });
+		stream.write(new gutil.File({
+			base: __dirname,
+			path: __dirname + '/included.js'
+		}));
 
-	  stream.write(new gutil.File({
-		  base: __dirname,
-		  path: __dirname + '/included.js'
-	  }));
+		stream.write(new gutil.File({
+			base: __dirname,
+			path: __dirname + '/ignored.js'
+		}));
 
-	  stream.write(new gutil.File({
-		  base: __dirname,
-		  path: __dirname + '/ignored.js'
-	  }));
+		stream.end();
+	});
 
-	  stream.end();
-  });
+	describe('with restore set to false', function () {
+		it('should filter files', function (cb) {
+			var stream = filter('included.js', {restore: false});
+			var buffer = [];
 
-  describe('with restore set to false', function () {
+			stream.on('data', function (file) {
+				buffer.push(file);
+			});
 
-	  it('should filter files', function (cb) {
-		  var stream = filter('included.js', {restore: false});
-		  var buffer = [];
+			stream.on('end', function () {
+				assert.equal(buffer.length, 1);
+				assert.equal(buffer[0].relative, 'included.js');
+				cb();
+			});
 
-		  stream.on('data', function (file) {
-			  buffer.push(file);
-		  });
+			stream.write(new gutil.File({
+				base: __dirname,
+				path: __dirname + '/included.js'
+			}));
 
-		  stream.on('end', function () {
-			  assert.equal(buffer.length, 1);
-			  assert.equal(buffer[0].relative, 'included.js');
-			  cb();
-		  });
+			stream.write(new gutil.File({
+				base: __dirname,
+				path: __dirname + '/ignored.js'
+			}));
 
-		  stream.write(new gutil.File({
-			  base: __dirname,
-			  path: __dirname + '/included.js'
-		  }));
-
-		  stream.write(new gutil.File({
-			  base: __dirname,
-			  path: __dirname + '/ignored.js'
-		  }));
-
-		  stream.end();
-	  });
-
+			stream.end();
+		});
 	});
 
 	it('should forward multimatch options', function (cb) {
@@ -94,6 +91,7 @@ describe('filter()', function () {
 		var stream = filter(function (file) {
 			return file.path === 'included.js';
 		});
+
 		var buffer = [];
 
 		stream.on('data', function (file) {
@@ -251,24 +249,24 @@ describe('filter.restore', function () {
 
 		restoreStream.on('data', function (file) {
 			buffer.push(file);
+
 			if (buffer.length === 4) {
-		    assert.equal(buffer[0].path, 'app.js');
-		    assert.equal(buffer[1].path, 'app2.js');
-		    assert.equal(buffer[2].path, 'package.json');
-		    assert.equal(buffer[3].path, 'package2.json');
-		    cb();
+				assert.equal(buffer[0].path, 'app.js');
+				assert.equal(buffer[1].path, 'app2.js');
+				assert.equal(buffer[2].path, 'package.json');
+				assert.equal(buffer[3].path, 'package2.json');
+				cb();
 			}
 		});
 
 		restoreStream.on('end', function () {
-		  done(new Error('Not expected to end!'));
+			done(new Error('Not expected to end!'));
 		});
 
 		stream.write(new gutil.File({path: 'package.json'}));
 		stream.write(new gutil.File({path: 'app.js'}));
 		stream.write(new gutil.File({path: 'package2.json'}));
 		stream.write(new gutil.File({path: 'app2.js'}));
-
 		stream.pipe(restoreStream);
 	});
 
