@@ -114,7 +114,7 @@ gulp.task('default', function () {
 
 ### filter(pattern, [options])
 
-Returns a [transform stream](http://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore()](#streamrestore) method.
+Returns a [transform stream](http://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore](#optionsrestore) object.
 
 #### pattern
 
