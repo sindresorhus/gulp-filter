@@ -1,4 +1,5 @@
 'use strict';
+var path = require('path');
 var assert = require('assert');
 var gutil = require('gulp-util');
 var filter = require('./');
@@ -20,12 +21,12 @@ describe('filter()', function () {
 
 		stream.write(new gutil.File({
 			base: __dirname,
-			path: __dirname + '/included.js'
+			path: path.join(__dirname, 'included.js')
 		}));
 
 		stream.write(new gutil.File({
 			base: __dirname,
-			path: __dirname + '/ignored.js'
+			path: path.join(__dirname, 'ignored.js')
 		}));
 
 		stream.end();
@@ -48,12 +49,12 @@ describe('filter()', function () {
 
 			stream.write(new gutil.File({
 				base: __dirname,
-				path: __dirname + '/included.js'
+				path: path.join(__dirname, 'included.js')
 			}));
 
 			stream.write(new gutil.File({
 				base: __dirname,
-				path: __dirname + '/ignored.js'
+				path: path.join(__dirname, 'ignored.js')
 			}));
 
 			stream.end();
@@ -76,12 +77,12 @@ describe('filter()', function () {
 
 		stream.write(new gutil.File({
 			base: __dirname,
-			path: __dirname + '/nested/resource.js'
+			path: path.join(__dirname, 'nested', 'resource.js')
 		}));
 
 		stream.write(new gutil.File({
 			base: __dirname,
-			path: __dirname + '/nested/resource.css'
+			path: path.join(__dirname, 'nested', 'resource.css')
 		}));
 
 		stream.end();
@@ -260,7 +261,7 @@ describe('filter.restore', function () {
 		});
 
 		restoreStream.on('end', function () {
-			done(new Error('Not expected to end!'));
+			cb(new Error('Not expected to end!'));
 		});
 
 		stream.pipe(restoreStream);
