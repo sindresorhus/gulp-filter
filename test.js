@@ -165,7 +165,7 @@ describe('filter.restore', function () {
 	});
 
 	it('should work when using multiple filters', function (cb) {
-		var streamFilter1 = filter(['*.json', '*.js'], {restore: true});
+		var streamFilter1 = filter(['*.js'], {restore: true});
 		var streamFilter2 = filter(['*.json'], {restore: true});
 		var buffer = [];
 
@@ -251,10 +251,10 @@ describe('filter.restore', function () {
 			buffer.push(file);
 
 			if (buffer.length === 4) {
-				assert.equal(buffer[0].path, 'app.js');
-				assert.equal(buffer[1].path, 'app2.js');
-				assert.equal(buffer[2].path, 'package.json');
-				assert.equal(buffer[3].path, 'package2.json');
+				assert.equal(buffer[0].path, 'package.json');
+				assert.equal(buffer[1].path, 'app.js');
+				assert.equal(buffer[2].path, 'package2.json');
+				assert.equal(buffer[3].path, 'app2.js');
 				cb();
 			}
 		});
@@ -263,11 +263,11 @@ describe('filter.restore', function () {
 			done(new Error('Not expected to end!'));
 		});
 
+		stream.pipe(restoreStream);
 		stream.write(new gutil.File({path: 'package.json'}));
 		stream.write(new gutil.File({path: 'app.js'}));
 		stream.write(new gutil.File({path: 'package2.json'}));
 		stream.write(new gutil.File({path: 'app2.js'}));
-		stream.pipe(restoreStream);
 	});
 
 	it('should work when restore stream is not used', function (cb) {
