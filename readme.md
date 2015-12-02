@@ -103,7 +103,8 @@ gulp.task('default', function () {
 		.pipe(gulp.dest('dist'));
 
 	// use filtered files as a gulp file source
-	filter.restore.pipe(gulp.dest('vendor-dist'));
+	filter.restore()
+		.pipe(gulp.dest('vendor-dist'));
 
 	return stream;
 });
