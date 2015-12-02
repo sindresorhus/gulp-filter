@@ -19,19 +19,19 @@ $ npm install --save-dev gulp-filter
 You may want to just filter the stream content:
 
 ```js
-var gulp = require('gulp');
-var jscs = require('gulp-jscs');
-var gulpFilter = require('gulp-filter');
+const gulp = require('gulp');
+const uglify = require('gulp-uglify');
+const filter = require('gulp-filter');
 
-gulp.task('default', function () {
+gulp.task('default', () => {
 	// create filter instance inside task function
-	var filter = gulpFilter(['*', '!src/vendor']);
+	const f = filter(['*', '!src/vendor']);
 
 	return gulp.src('src/*.js')
 		// filter a subset of the files
-		.pipe(filter)
+		.pipe(f)
 		// run them through a plugin
-		.pipe(jscs())
+		.pipe(uglify())
 		.pipe(gulp.dest('dist'));
 });
 ```
@@ -39,21 +39,21 @@ gulp.task('default', function () {
 ### Restoring filtered files
 
 ```js
-var gulp = require('gulp');
-var jscs = require('gulp-jscs');
-var gulpFilter = require('gulp-filter');
+const gulp = require('gulp');
+const uglify = require('gulp-uglify');
+const filter = require('gulp-filter');
 
-gulp.task('default', function () {
+gulp.task('default', () => {
 	// create filter instance inside task function
-	var filter = gulpFilter(['*', '!src/vendor'], {restore: true});
+	const f = filter(['*', '!src/vendor'], {restore: true});
 
 	return gulp.src('src/*.js')
 		// filter a subset of the files
-		.pipe(filter)
+		.pipe(f)
 		// run them through a plugin
-		.pipe(jscs())
+		.pipe(uglify())
 		// bring back the previously filtered out files (optional)
-		.pipe(filter.restore)
+		.pipe(f.restore)
 		.pipe(gulp.dest('dist'));
 });
 ```
@@ -63,14 +63,14 @@ gulp.task('default', function () {
 By combining and restoring different filters you can process different sets of files with a single pipeline.
 
 ```js
-var gulp = require('gulp');
-var less = require('gulp-less');
-var concat = require('gulp-concat');
-var gulpFilter = require('gulp-filter');
+const gulp = require('gulp');
+const less = require('gulp-less');
+const concat = require('gulp-concat');
+const filter = require('gulp-filter');
 
-gulp.task('default', function () {
-	var jsFilter = gulpFilter('**/*.js', {restore: true});
-	var lessFilter = gulpFilter('**/*.less', {restore: true});
+gulp.task('default', () => {
+	const jsFilter = filter('**/*.js', {restore: true});
+	const lessFilter = filter('**/*.less', {restore: true});
 
 	return gulp.src('assets/**')
 		.pipe(jsFilter)
@@ -88,22 +88,22 @@ gulp.task('default', function () {
 You can restore filtered files in a different place and use it as a standalone source of files (ReadableStream). Setting the `passthrough` option to `false` allows you to do so.
 
 ```js
-var gulp = require('gulp');
-var jscs = require('gulp-jscs');
-var gulpFilter = require('gulp-filter');
+const gulp = require('gulp');
+const uglify = require('gulp-uglify');
+const filter = require('gulp-filter');
 
-gulp.task('default', function () {
-	var filter = gulpFilter(['*', '!src/vendor'], {restore: true, passthrough: false});
+gulp.task('default', () => {
+	const f = filter(['*', '!src/vendor'], {restore: true, passthrough: false});
 
-	var stream = gulp.src('src/*.js')
+	const stream = gulp.src('src/*.js')
 		// filter a subset of the files
-		.pipe(filter)
+		.pipe(f)
 		// run them through a plugin
-		.pipe(jscs())
+		.pipe(uglify())
 		.pipe(gulp.dest('dist'));
 
 	// use filtered files as a gulp file source
-	filter.restore.pipe(gulp.dest('vendor-dist'));
+	f.restore.pipe(gulp.dest('vendor-dist'));
 
 	return stream;
 });
@@ -125,9 +125,7 @@ Accepts a string/array with globbing patterns which are run through [multimatch]
 If you supply a function you'll get a [vinyl file object](https://github.com/wearefractal/vinyl#file) as the first argument and you're expected to return true/false whether to include the file:
 
 ```js
-filter(function (file) {
-	return /unicorns/.test(file.path);
-});
+filter(file => /unicorns/.test(file.path));
 ```
 
 #### options
@@ -140,14 +138,14 @@ Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
 #### options.restore
 
-Type: `boolean`
+Type: `boolean`  
 Default: `false`
 
 Restore filtered files.
 
 #### options.passthrough
 
-Type: `boolean`
+Type: `boolean`  
 Default: `true`
 
 When set to `true` filtered files are restored with a PassThrough stream, otherwise, when set to `false`, filtered files are restored as a Readable stream.
