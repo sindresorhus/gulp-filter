@@ -131,6 +131,34 @@ describe('filter()', function () {
 		stream.write(new gutil.File({path: 'app.js'}));
 		stream.end();
 	});
+
+	it('should filter with respect to current working directory', function (cb) {
+		var stream = filter('test/**/*.js');
+		var buffer = [];
+
+		stream.on('data', function (file) {
+			buffer.push(file);
+		});
+
+		stream.on('end', function () {
+			assert.equal(buffer.length, 1);
+			assert.equal(buffer[0].relative, 'included.js');
+			cb();
+		});
+
+		// mimic gulp.src('test/**/*.js')
+		stream.write(new gutil.File({
+			base: path.join(__dirname, 'test'),
+			path: path.join(__dirname, 'test', 'included.js')
+		}));
+
+		stream.write(new gutil.File({
+			base: __dirname,
+			path: path.join(__dirname, 'ignored.js')
+		}));
+
+		stream.end();
+	});
 });
 
 describe('filter.restore', function () {

@@ -1,6 +1,7 @@
 'use strict';
 var gutil = require('gulp-util');
 var multimatch = require('multimatch');
+var path = require('path');
 var streamfilter = require('streamfilter');
 
 module.exports = function (pattern, options) {
@@ -13,7 +14,7 @@ module.exports = function (pattern, options) {
 
 	return streamfilter(function (file, enc, cb) {
 		var match = typeof pattern === 'function' ? pattern(file) :
-			multimatch(file.relative, pattern, options).length > 0;
+			multimatch(path.relative(file.cwd, file.path), pattern, options).length > 0;
 
 		cb(!match);
 	}, {
