@@ -14,7 +14,7 @@ module.exports = function (pattern, options) {
 
 	return streamfilter(function (file, enc, cb) {
 		var match = typeof pattern === 'function' ? pattern(file) :
-			multimatch(path.relative(file.cwd, file.path), pattern, options).length > 0;
+			multimatch(options.relativeToCwd ? path.relative(file.cwd, file.path) : file.relative, pattern, options).length > 0;
 
 		cb(!match);
 	}, {
