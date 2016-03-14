@@ -4,6 +4,14 @@ var multimatch = require('multimatch');
 var path = require('path');
 var streamfilter = require('streamfilter');
 
+function relative(file) {
+	return file.relative;
+}
+
+function relativeToCwd(file) {
+	return path.relative(file.cwd, file.path);
+}
+
 module.exports = function (pattern, options) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
 	options = options || {};
@@ -14,7 +22,7 @@ module.exports = function (pattern, options) {
 
 	return streamfilter(function (file, enc, cb) {
 		var match = typeof pattern === 'function' ? pattern(file) :
-			multimatch(options.relativeToCwd ? path.relative(file.cwd, file.path) : file.relative, pattern, options).length > 0;
+			multimatch((options.fileToPath || relativeToCwd)(file), pattern, options).length > 0;
 
 		cb(!match);
 	}, {
@@ -23,3 +31,6 @@ module.exports = function (pattern, options) {
 		restore: options.restore
 	});
 };
+
+module.exports.relative = relative;
+module.exports.relativeToCwd = relativeToCwd;

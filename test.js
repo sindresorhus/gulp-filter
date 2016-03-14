@@ -133,7 +133,7 @@ describe('filter()', function () {
 	});
 
 	it('should filter with respect to current working directory with relativeToCwd', function (cb) {
-		var stream = filter('test/**/*.js', {relativeToCwd: true});
+		var stream = filter('test/**/*.js');
 		var buffer = [];
 
 		stream.on('data', function (file) {
@@ -161,7 +161,7 @@ describe('filter()', function () {
 	});
 
 	it('should filter with respect to base path', function (cb) {
-		var stream = filter('*.js');
+		var stream = filter('*.js', {fileToPath: filter.relative});
 		var buffer = [];
 
 		stream.on('data', function (file) {
