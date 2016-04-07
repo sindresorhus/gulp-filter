@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-env mocha */
 var path = require('path');
 var assert = require('assert');
 var gutil = require('gulp-util');

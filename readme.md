@@ -138,14 +138,14 @@ Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
 #### options.restore
 
-Type: `boolean`  
+Type: `boolean`<br>
 Default: `false`
 
 Restore filtered files.
 
 #### options.passthrough
 
-Type: `boolean`  
+Type: `boolean`<br>
 Default: `true`
 
 When set to `true` filtered files are restored with a PassThrough stream, otherwise, when set to `false`, filtered files are restored as a Readable stream.
@@ -155,4 +155,4 @@ When the stream is Readable it ends by itself, but when PassThrough, you are res
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](https://sindresorhus.com)

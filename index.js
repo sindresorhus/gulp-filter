@@ -1,7 +1,7 @@
 'use strict';
+var path = require('path');
 var gutil = require('gulp-util');
 var multimatch = require('multimatch');
-var path = require('path');
 var streamfilter = require('streamfilter');
 
 module.exports = function (pattern, options) {
