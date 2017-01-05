@@ -13,8 +13,16 @@ module.exports = function (pattern, options) {
 	}
 
 	return streamfilter(function (file, enc, cb) {
-		var match = typeof pattern === 'function' ? pattern(file) :
-			multimatch(path.relative(file.cwd, file.path), pattern, options).length > 0;
+		var match;
+		if (typeof pattern === 'function') {
+			match = pattern(file);
+		} else {
+			var relPath = path.relative(file.cwd, file.path);
+			if (relPath.indexOf('..') === 0) {
+				relPath = path.resolve(relPath);
+			}
+			match = multimatch(relPath, pattern, options).length > 0;
+		}
 
 		cb(!match);
 	}, {

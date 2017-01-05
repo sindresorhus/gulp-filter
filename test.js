@@ -160,6 +160,28 @@ describe('filter()', function () {
 
 		stream.end();
 	});
+
+	it('should filter relative paths that leave current directory tree', function (cb) {
+		var stream = filter('**/test/**/*.js');
+		var buffer = [];
+		var gfile = path.join('..', '..', 'test', 'included.js');
+
+		stream.on('data', function (file) {
+			buffer.push(file);
+		});
+
+		stream.on('end', function () {
+			assert.equal(buffer.length, 1);
+			assert.equal(buffer[0].relative, gfile);
+			cb();
+		});
+
+		stream.write(new gutil.File({
+			path: gfile
+		}));
+
+		stream.end();
+	});
 });
 
 describe('filter.restore', function () {
