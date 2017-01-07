@@ -222,8 +222,8 @@ describe('filter.restore', function () {
 		streamFilter1.end();
 	});
 
-	it('should end when not using the passthough option', function (cb) {
-		var stream = filter('*.json', {restore: true, passthough: false});
+	it('should end when not using the passthrough option', function (cb) {
+		var stream = filter('*.json', {restore: true, passthrough: false});
 		var restoreStream = stream.restore;
 		var buffer = [];
 

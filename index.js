@@ -19,7 +19,7 @@ module.exports = function (pattern, options) {
 		cb(!match);
 	}, {
 		objectMode: true,
-		passthrough: options.passthough !== false,
+		passthrough: options.passthrough !== false,
 		restore: options.restore
 	});
 };
