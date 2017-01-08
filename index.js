@@ -18,7 +18,10 @@ module.exports = function (pattern, options) {
 			match = pattern(file);
 		} else {
 			var relPath = path.relative(file.cwd, file.path);
-			if (relPath.indexOf('..') === 0) {
+			// if the path leaves the current working directory, then we need to
+			// resolve the absolute path so that the path can be properly matched
+			// by minimatch (via multimatch)
+			if (relPath.indexOf('../') === 0) {
 				relPath = path.resolve(relPath);
 			}
 			match = multimatch(relPath, pattern, options).length > 0;
