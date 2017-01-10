@@ -1,8 +1,8 @@
 # gulp-filter [![Build Status](https://travis-ci.org/sindresorhus/gulp-filter.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-filter)
 
-> Filter files in a [vinyl](https://github.com/wearefractal/vinyl) stream
+> Filter files in a [Vinyl](https://github.com/gulpjs/vinyl) stream
 
-Enables you to work on a subset of the original files by filtering them using globbing. When you're done and want all the original files back you just use the `restore` stream.
+Enables you to work on a subset of the original files by filtering them using glob patterns. When you're done and want all the original files back you just use the `restore` stream.
 
 
 ## Install
@@ -24,13 +24,13 @@ const uglify = require('gulp-uglify');
 const filter = require('gulp-filter');
 
 gulp.task('default', () => {
-	// create filter instance inside task function
+	// Create filter instance inside task function
 	const f = filter(['**', '!*src/vendor']);
 
 	return gulp.src('src/**/*.js')
-		// filter a subset of the files
+		// Filter a subset of the files
 		.pipe(f)
-		// run them through a plugin
+		// Run them through a plugin
 		.pipe(uglify())
 		.pipe(gulp.dest('dist'));
 });
@@ -44,15 +44,15 @@ const uglify = require('gulp-uglify');
 const filter = require('gulp-filter');
 
 gulp.task('default', () => {
-	// create filter instance inside task function
+	// Create filter instance inside task function
 	const f = filter(['**', '!*src/vendor'], {restore: true});
 
 	return gulp.src('src/**/*.js')
-		// filter a subset of the files
+		// Filter a subset of the files
 		.pipe(f)
-		// run them through a plugin
+		// Run them through a plugin
 		.pipe(uglify())
-		// bring back the previously filtered out files (optional)
+		// Bring back the previously filtered out files (optional)
 		.pipe(f.restore)
 		.pipe(gulp.dest('dist'));
 });
@@ -96,13 +96,13 @@ gulp.task('default', () => {
 	const f = filter(['**', '!*src/vendor'], {restore: true, passthrough: false});
 
 	const stream = gulp.src('src/**/*.js')
-		// filter a subset of the files
+		// Filter a subset of the files
 		.pipe(f)
-		// run them through a plugin
+		// Run them through a plugin
 		.pipe(uglify())
 		.pipe(gulp.dest('dist'));
 
-	// use filtered files as a gulp file source
+	// Use filtered files as a gulp file source
 	f.restore.pipe(gulp.dest('vendor-dist'));
 
 	return stream;
@@ -114,15 +114,15 @@ gulp.task('default', () => {
 
 ### filter(pattern, [options])
 
-Returns a [transform stream](http://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore](#optionsrestore) object.
+Returns a [transform stream](http://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore](#optionsrestore) property.
 
 #### pattern
 
-Type: `string`, `array`, `function`
+Type: `string` `Array` `Function`
 
 Accepts a string/array with globbing patterns which are run through [multimatch](https://github.com/sindresorhus/multimatch).
 
-If you supply a function you'll get a [vinyl file object](https://github.com/wearefractal/vinyl#file) as the first argument and you're expected to return true/false whether to include the file:
+If you supply a function, you'll get a [vinyl file object](https://github.com/wearefractal/vinyl#file) as the first argument and you're expected to return a boolean of whether to include the file:
 
 ```js
 filter(file => /unicorns/.test(file.path));
@@ -130,27 +130,27 @@ filter(file => /unicorns/.test(file.path));
 
 #### options
 
-Type: `object`
+Type: `Object`
 
 Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
 
-*Note:* Set `dot: true` if you need to match files prefixed with a dot (eg. `.gitignore`).
+*Note:* Set `dot: true` if you need to match files prefixed with a dot (e.g. `.gitignore`).
 
-#### options.restore
+##### restore
 
 Type: `boolean`<br>
 Default: `false`
 
 Restore filtered files.
 
-#### options.passthrough
+##### passthrough
 
 Type: `boolean`<br>
 Default: `true`
 
-When set to `true` filtered files are restored with a PassThrough stream, otherwise, when set to `false`, filtered files are restored as a Readable stream.
+When set to `true`, filtered files are restored with a `PassThrough` stream, otherwise, when set to `false`, filtered files are restored as a `ReadableStream`.
 
-When the stream is Readable it ends by itself, but when PassThrough, you are responsible of ending the stream.
+When the stream is a `ReadableStream`, it ends by itself, but when it's `PassThrough`, you are responsible of ending the stream.
 
 
 ## License

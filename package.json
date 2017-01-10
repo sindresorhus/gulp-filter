@@ -1,7 +1,7 @@
 {
   "name": "gulp-filter",
   "version": "4.0.0",
-  "description": "Filter files in a vinyl stream",
+  "description": "Filter files in a Vinyl stream",
   "license": "MIT",
   "repository": "sindresorhus/gulp-filter",
   "author": {
@@ -10,7 +10,7 @@
     "url": "sindresorhus.com"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=4"
   },
   "scripts": {
     "test": "xo && mocha"
@@ -37,5 +37,8 @@
   "devDependencies": {
     "mocha": "*",
     "xo": "*"
+  },
+  "xo": {
+    "esnext": true
   }
 }
