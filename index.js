@@ -13,8 +13,19 @@ module.exports = function (pattern, options) {
 	}
 
 	return streamfilter(function (file, enc, cb) {
-		var match = typeof pattern === 'function' ? pattern(file) :
-			multimatch(path.relative(file.cwd, file.path), pattern, options).length > 0;
+		var match;
+		if (typeof pattern === 'function') {
+			match = pattern(file);
+		} else {
+			var relPath = path.relative(file.cwd, file.path);
+			// if the path leaves the current working directory, then we need to
+			// resolve the absolute path so that the path can be properly matched
+			// by minimatch (via multimatch)
+			if (relPath.indexOf('../') === 0) {
+				relPath = path.resolve(relPath);
+			}
+			match = multimatch(relPath, pattern, options).length > 0;
+		}
 
 		cb(!match);
 	}, {
