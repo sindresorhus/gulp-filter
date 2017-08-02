@@ -72,7 +72,7 @@ describe('filter()', () => {
 
 		stream.on('end', () => {
 			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, 'nested/resource.js');
+			assert.equal(buffer[0].relative, path.join('nested', 'resource.js'));
 			cb();
 		});
 
