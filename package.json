@@ -1,44 +1,41 @@
 {
-  "name": "gulp-filter",
-  "version": "5.0.0",
-  "description": "Filter files in a Vinyl stream",
-  "license": "MIT",
-  "repository": "sindresorhus/gulp-filter",
-  "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com"
-  },
-  "engines": {
-    "node": ">=4"
-  },
-  "scripts": {
-    "test": "xo && mocha"
-  },
-  "files": [
-    "index.js"
-  ],
-  "keywords": [
-    "gulpplugin",
-    "filter",
-    "ignore",
-    "file",
-    "files",
-    "match",
-    "minimatch",
-    "glob",
-    "globbing"
-  ],
-  "dependencies": {
-    "gulp-util": "^3.0.6",
-    "multimatch": "^2.0.0",
-    "streamfilter": "^1.0.5"
-  },
-  "devDependencies": {
-    "mocha": "*",
-    "xo": "*"
-  },
-  "xo": {
-    "esnext": true
-  }
+	"name": "gulp-filter",
+	"version": "5.0.0",
+	"description": "Filter files in a Vinyl stream",
+	"license": "MIT",
+	"repository": "sindresorhus/gulp-filter",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=4"
+	},
+	"scripts": {
+		"test": "xo && mocha"
+	},
+	"files": [
+		"index.js"
+	],
+	"keywords": [
+		"gulpplugin",
+		"filter",
+		"ignore",
+		"file",
+		"files",
+		"match",
+		"minimatch",
+		"glob",
+		"globbing"
+	],
+	"dependencies": {
+		"gulp-util": "^3.0.6",
+		"multimatch": "^2.0.0",
+		"streamfilter": "^1.0.5"
+	},
+	"devDependencies": {
+		"mocha": "*",
+		"xo": "*"
+	}
 }

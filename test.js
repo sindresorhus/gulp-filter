@@ -3,7 +3,7 @@
 const path = require('path');
 const assert = require('assert');
 const gutil = require('gulp-util');
-const filter = require('./');
+const filter = require('.');
 
 describe('filter()', () => {
 	it('should filter files', cb => {
@@ -147,7 +147,7 @@ describe('filter()', () => {
 			cb();
 		});
 
-		// mimic gulp.src('test/**/*.js')
+		// Mimic `gulp.src('test/**/*.js')`
 		stream.write(new gutil.File({
 			base: path.join(__dirname, 'test'),
 			path: path.join(__dirname, 'test', 'included.js')
