@@ -23,7 +23,7 @@ module.exports = (pattern, options) => {
 			// If the path leaves the current working directory, then we need to
 			// resolve the absolute path so that the path can be properly matched
 			// by minimatch (via multimatch)
-			if (relPath.indexOf('../') === 0) {
+			if (/^\.\.[\\/]/.test(relPath)) {
 				relPath = path.resolve(relPath);
 			}
 
