@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 const path = require('path');
 const assert = require('assert');
-const gutil = require('gulp-util');
+const Vinyl = require('vinyl');
 const filter = require('.');
 
 describe('filter()', () => {
@@ -20,12 +20,12 @@ describe('filter()', () => {
 			cb();
 		});
 
-		stream.write(new gutil.File({
+		stream.write(new Vinyl({
 			base: __dirname,
 			path: path.join(__dirname, 'included.js')
 		}));
 
-		stream.write(new gutil.File({
+		stream.write(new Vinyl({
 			base: __dirname,
 			path: path.join(__dirname, 'ignored.js')
 		}));
@@ -48,12 +48,12 @@ describe('filter()', () => {
 				cb();
 			});
 
-			stream.write(new gutil.File({
+			stream.write(new Vinyl({
 				base: __dirname,
 				path: path.join(__dirname, 'included.js')
 			}));
 
-			stream.write(new gutil.File({
+			stream.write(new Vinyl({
 				base: __dirname,
 				path: path.join(__dirname, 'ignored.js')
 			}));
@@ -76,12 +76,12 @@ describe('filter()', () => {
 			cb();
 		});
 
-		stream.write(new gutil.File({
+		stream.write(new Vinyl({
 			base: __dirname,
 			path: path.join(__dirname, 'nested', 'resource.js')
 		}));
 
-		stream.write(new gutil.File({
+		stream.write(new Vinyl({
 			base: __dirname,
 			path: path.join(__dirname, 'nested', 'resource.css')
 		}));
@@ -106,8 +106,8 @@ describe('filter()', () => {
 			cb();
 		});
 
-		stream.write(new gutil.File({path: 'included.js'}));
-		stream.write(new gutil.File({path: 'ignored.js'}));
+		stream.write(new Vinyl({path: 'included.js'}));
+		stream.write(new Vinyl({path: 'ignored.js'}));
 		stream.end();
 	});
 
@@ -126,10 +126,10 @@ describe('filter()', () => {
 			cb();
 		});
 
-		stream.write(new gutil.File({path: 'included.js'}));
-		stream.write(new gutil.File({path: 'package.json'}));
-		stream.write(new gutil.File({path: '.jshintrc'}));
-		stream.write(new gutil.File({path: 'app.js'}));
+		stream.write(new Vinyl({path: 'included.js'}));
+		stream.write(new Vinyl({path: 'package.json'}));
+		stream.write(new Vinyl({path: '.jshintrc'}));
+		stream.write(new Vinyl({path: 'app.js'}));
 		stream.end();
 	});
 
@@ -148,12 +148,12 @@ describe('filter()', () => {
 		});
 
 		// Mimic `gulp.src('test/**/*.js')`
-		stream.write(new gutil.File({
+		stream.write(new Vinyl({
 			base: path.join(__dirname, 'test'),
 			path: path.join(__dirname, 'test', 'included.js')
 		}));
 
-		stream.write(new gutil.File({
+		stream.write(new Vinyl({
 			base: __dirname,
 			path: path.join(__dirname, 'ignored.js')
 		}));
@@ -176,7 +176,7 @@ describe('filter()', () => {
 			cb();
 		});
 
-		stream.write(new gutil.File({
+		stream.write(new Vinyl({
 			path: gfile
 		}));
 
@@ -210,9 +210,9 @@ describe('filter.restore', () => {
 			cb();
 		});
 
-		stream.write(new gutil.File({path: 'package.json'}));
-		stream.write(new gutil.File({path: 'app.js'}));
-		stream.write(new gutil.File({path: 'package2.json'}));
+		stream.write(new Vinyl({path: 'package.json'}));
+		stream.write(new Vinyl({path: 'app.js'}));
+		stream.write(new Vinyl({path: 'package2.json'}));
 		stream.end();
 	});
 
@@ -238,9 +238,9 @@ describe('filter.restore', () => {
 			cb();
 		});
 
-		streamFilter1.write(new gutil.File({path: 'package.json'}));
-		streamFilter1.write(new gutil.File({path: 'app.js'}));
-		streamFilter1.write(new gutil.File({path: 'main.css'}));
+		streamFilter1.write(new Vinyl({path: 'package.json'}));
+		streamFilter1.write(new Vinyl({path: 'app.js'}));
+		streamFilter1.write(new Vinyl({path: 'main.css'}));
 		streamFilter1.end();
 	});
 
@@ -259,9 +259,9 @@ describe('filter.restore', () => {
 			cb();
 		});
 
-		stream.write(new gutil.File({path: 'package.json'}));
-		stream.write(new gutil.File({path: 'app.js'}));
-		stream.write(new gutil.File({path: 'package2.json'}));
+		stream.write(new Vinyl({path: 'package.json'}));
+		stream.write(new Vinyl({path: 'app.js'}));
+		stream.write(new Vinyl({path: 'package2.json'}));
 		stream.end();
 	});
 
@@ -276,7 +276,7 @@ describe('filter.restore', () => {
 				setImmediate(() => {
 					restoreStream.end();
 					setImmediate(() => {
-						stream.write(new gutil.File({path: 'app2.js'}));
+						stream.write(new Vinyl({path: 'app2.js'}));
 						stream.end();
 					});
 				});
@@ -290,8 +290,8 @@ describe('filter.restore', () => {
 			cb();
 		});
 
-		stream.write(new gutil.File({path: 'package.json'}));
-		stream.write(new gutil.File({path: 'app.js'}));
+		stream.write(new Vinyl({path: 'package.json'}));
+		stream.write(new Vinyl({path: 'app.js'}));
 	});
 
 	it('should pass files as they come', cb => {
@@ -316,17 +316,17 @@ describe('filter.restore', () => {
 		});
 
 		stream.pipe(restoreStream);
-		stream.write(new gutil.File({path: 'package.json'}));
-		stream.write(new gutil.File({path: 'app.js'}));
-		stream.write(new gutil.File({path: 'package2.json'}));
-		stream.write(new gutil.File({path: 'app2.js'}));
+		stream.write(new Vinyl({path: 'package.json'}));
+		stream.write(new Vinyl({path: 'app.js'}));
+		stream.write(new Vinyl({path: 'package2.json'}));
+		stream.write(new Vinyl({path: 'app2.js'}));
 	});
 
 	it('should work when restore stream is not used', cb => {
 		const stream = filter('*.json');
 
 		for (let i = 0; i < stream._writableState.highWaterMark + 1; i++) {
-			stream.write(new gutil.File({path: 'nonmatch.js'}));
+			stream.write(new Vinyl({path: 'nonmatch.js'}));
 		}
 
 		stream.on('finish', cb);

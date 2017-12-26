@@ -1,6 +1,6 @@
 'use strict';
 const path = require('path');
-const gutil = require('gulp-util');
+const PluginError = require('plugin-error');
 const multimatch = require('multimatch');
 const streamfilter = require('streamfilter');
 
@@ -9,7 +9,7 @@ module.exports = (pattern, options) => {
 	options = options || {};
 
 	if (!Array.isArray(pattern) && typeof pattern !== 'function') {
-		throw new gutil.PluginError('gulp-filter', '`pattern` should be a string, array, or function');
+		throw new PluginError('gulp-filter', '`pattern` should be a string, array, or function');
 	}
 
 	return streamfilter((file, enc, cb) => {
