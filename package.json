@@ -30,12 +30,13 @@
 		"globbing"
 	],
 	"dependencies": {
-		"gulp-util": "^3.0.6",
 		"multimatch": "^2.0.0",
+		"plugin-error": "^0.1.2",
 		"streamfilter": "^1.0.5"
 	},
 	"devDependencies": {
 		"mocha": "*",
+		"vinyl": "^2.1.0",
 		"xo": "*"
 	}
 }
