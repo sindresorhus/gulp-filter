@@ -148,9 +148,9 @@ Restore filtered files.
 Type: `boolean`<br>
 Default: `true`
 
-When set to `true`, filtered files are restored with a `PassThrough` stream, otherwise, when set to `false`, filtered files are restored as a `ReadableStream`.
+When set to `true`, filtered files are restored with a `stream.PassThrough`, otherwise, when set to `false`, filtered files are restored as a `stram.Readable`.
 
-When the stream is a `ReadableStream`, it ends by itself, but when it's `PassThrough`, you are responsible of ending the stream.
+When the stream is a `stream.Readable`, it ends by itself, but when it's `stream.PassThrough`, you are responsible of ending the stream.
 
 
 ## License
