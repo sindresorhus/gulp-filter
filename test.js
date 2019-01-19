@@ -15,8 +15,8 @@ describe('filter()', () => {
 		});
 
 		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, 'included.js');
+			assert.strictEqual(buffer.length, 1);
+			assert.strictEqual(buffer[0].relative, 'included.js');
 			cb();
 		});
 
@@ -43,8 +43,8 @@ describe('filter()', () => {
 			});
 
 			stream.on('end', () => {
-				assert.equal(buffer.length, 1);
-				assert.equal(buffer[0].relative, 'included.js');
+				assert.strictEqual(buffer.length, 1);
+				assert.strictEqual(buffer[0].relative, 'included.js');
 				cb();
 			});
 
@@ -71,8 +71,8 @@ describe('filter()', () => {
 		});
 
 		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, path.join('nested', 'resource.js'));
+			assert.strictEqual(buffer.length, 1);
+			assert.strictEqual(buffer[0].relative, path.join('nested', 'resource.js'));
 			cb();
 		});
 
@@ -101,8 +101,8 @@ describe('filter()', () => {
 		});
 
 		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].path, 'included.js');
+			assert.strictEqual(buffer.length, 1);
+			assert.strictEqual(buffer[0].path, 'included.js');
 			cb();
 		});
 
@@ -120,9 +120,9 @@ describe('filter()', () => {
 		});
 
 		stream.on('end', () => {
-			assert.equal(buffer.length, 2);
-			assert.equal(buffer[0].path, 'included.js');
-			assert.equal(buffer[1].path, 'app.js');
+			assert.strictEqual(buffer.length, 2);
+			assert.strictEqual(buffer[0].path, 'included.js');
+			assert.strictEqual(buffer[1].path, 'app.js');
 			cb();
 		});
 
@@ -142,8 +142,8 @@ describe('filter()', () => {
 		});
 
 		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, 'included.js');
+			assert.strictEqual(buffer.length, 1);
+			assert.strictEqual(buffer[0].relative, 'included.js');
 			cb();
 		});
 
@@ -171,8 +171,8 @@ describe('filter()', () => {
 		});
 
 		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, gfile);
+			assert.strictEqual(buffer.length, 1);
+			assert.strictEqual(buffer[0].relative, gfile);
 			cb();
 		});
 
@@ -200,13 +200,13 @@ describe('filter.restore', () => {
 		});
 
 		completeStream.on('end', () => {
-			assert.equal(buffer.length, 2);
-			assert.equal(buffer[0].path, 'package.json');
-			assert.equal(buffer[1].path, 'package2.json');
-			assert.equal(completeBuffer.length, 3);
-			assert.equal(completeBuffer[0].path, 'package.json');
-			assert.equal(completeBuffer[1].path, 'app.js');
-			assert.equal(completeBuffer[2].path, 'package2.json');
+			assert.strictEqual(buffer.length, 2);
+			assert.strictEqual(buffer[0].path, 'package.json');
+			assert.strictEqual(buffer[1].path, 'package2.json');
+			assert.strictEqual(completeBuffer.length, 3);
+			assert.strictEqual(completeBuffer[0].path, 'package.json');
+			assert.strictEqual(completeBuffer[1].path, 'app.js');
+			assert.strictEqual(completeBuffer[2].path, 'package2.json');
 			cb();
 		});
 
@@ -231,10 +231,10 @@ describe('filter.restore', () => {
 		});
 
 		completeStream.on('end', () => {
-			assert.equal(buffer.length, 3);
-			assert.equal(buffer[0].path, 'package.json');
-			assert.equal(buffer[1].path, 'app.js');
-			assert.equal(buffer[2].path, 'main.css');
+			assert.strictEqual(buffer.length, 3);
+			assert.strictEqual(buffer[0].path, 'package.json');
+			assert.strictEqual(buffer[1].path, 'app.js');
+			assert.strictEqual(buffer[2].path, 'main.css');
 			cb();
 		});
 
@@ -254,8 +254,8 @@ describe('filter.restore', () => {
 		});
 
 		restoreStream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].path, 'app.js');
+			assert.strictEqual(buffer.length, 1);
+			assert.strictEqual(buffer[0].path, 'app.js');
 			cb();
 		});
 
@@ -284,9 +284,9 @@ describe('filter.restore', () => {
 		});
 
 		restoreStream.on('end', () => {
-			assert.equal(buffer.length, 2);
-			assert.equal(buffer[0].path, 'app.js');
-			assert.equal(buffer[1].path, 'app2.js');
+			assert.strictEqual(buffer.length, 2);
+			assert.strictEqual(buffer[0].path, 'app.js');
+			assert.strictEqual(buffer[1].path, 'app2.js');
 			cb();
 		});
 
@@ -303,10 +303,10 @@ describe('filter.restore', () => {
 			buffer.push(file);
 
 			if (buffer.length === 4) {
-				assert.equal(buffer[0].path, 'package.json');
-				assert.equal(buffer[1].path, 'app.js');
-				assert.equal(buffer[2].path, 'package2.json');
-				assert.equal(buffer[3].path, 'app2.js');
+				assert.strictEqual(buffer[0].path, 'package.json');
+				assert.strictEqual(buffer[1].path, 'app.js');
+				assert.strictEqual(buffer[2].path, 'package2.json');
+				assert.strictEqual(buffer[3].path, 'app2.js');
 				cb();
 			}
 		});
