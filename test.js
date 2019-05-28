@@ -1,7 +1,7 @@
 'use strict';
 /* eslint-env mocha */
 const path = require('path');
-const assert = require('assert');
+const {strict: assert} = require('assert');
 const Vinyl = require('vinyl');
 const filter = require('.');
 
@@ -90,9 +90,7 @@ describe('filter()', () => {
 	});
 
 	it('should filter using a function', cb => {
-		const stream = filter(file => {
-			return file.path === 'included.js';
-		});
+		const stream = filter(file => file.path === 'included.js');
 
 		const buffer = [];
 

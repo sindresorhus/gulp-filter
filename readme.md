@@ -1,8 +1,8 @@
 # gulp-filter [![Build Status](https://travis-ci.org/sindresorhus/gulp-filter.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-filter)
 
-> Filter files in a [Vinyl](https://github.com/gulpjs/vinyl) stream
+> Filter files in a [`vinyl`](https://github.com/gulpjs/vinyl) stream
 
-Enables you to work on a subset of the original files by filtering them using glob patterns. When you're done and want all the original files back you just use the `restore` stream.
+Enables you to work on a subset of the original files by filtering them using glob patterns. When you're done and want all the original files back, you just use the `restore` stream.
 
 
 ## Install
@@ -114,15 +114,15 @@ gulp.task('default', () => {
 
 ### filter(pattern, [options])
 
-Returns a [transform stream](http://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore](#optionsrestore) property.
+Returns a [transform stream](https://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore](#optionsrestore) property.
 
 #### pattern
 
-Type: `string` `Array` `Function`
+Type: `string | string[] | Function`
 
 Accepts a string/array with globbing patterns which are run through [multimatch](https://github.com/sindresorhus/multimatch).
 
-If you supply a function, you'll get a [vinyl file object](https://github.com/wearefractal/vinyl#file) as the first argument and you're expected to return a boolean of whether to include the file:
+If you supply a function, you'll get a [`vinyl` file object](https://github.com/wearefractal/vinyl#file) as the first argument and you're expected to return a boolean of whether to include the file:
 
 ```js
 filter(file => /unicorns/.test(file.path));
@@ -130,11 +130,11 @@ filter(file => /unicorns/.test(file.path));
 
 #### options
 
-Type: `Object`
+Type: `object`
 
-Accepts [minimatch options](https://github.com/isaacs/minimatch#options).
+Accepts [`minimatch` options](https://github.com/isaacs/minimatch#options).
 
-*Note:* Set `dot: true` if you need to match files prefixed with a dot (e.g. `.gitignore`).
+*Note:* Set `dot: true` if you need to match files prefixed with a dot, for example, `.gitignore`.
 
 ##### restore
 
@@ -151,8 +151,3 @@ Default: `true`
 When set to `true`, filtered files are restored with a `stream.PassThrough`, otherwise, when set to `false`, filtered files are restored as a `stram.Readable`.
 
 When the stream is a `stream.Readable`, it ends by itself, but when it's `stream.PassThrough`, you are responsible of ending the stream.
-
-
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)
