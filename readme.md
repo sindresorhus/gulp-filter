@@ -23,7 +23,7 @@ const gulp = require('gulp');
 const uglify = require('gulp-uglify');
 const filter = require('gulp-filter');
 
-gulp.task('default', () => {
+exports.default = () => {
 	// Create filter instance inside task function
 	const f = filter(['**', '!*src/vendor']);
 
@@ -33,7 +33,7 @@ gulp.task('default', () => {
 		// Run them through a plugin
 		.pipe(uglify())
 		.pipe(gulp.dest('dist'));
-});
+};
 ```
 
 ### Restoring filtered files
@@ -43,7 +43,7 @@ const gulp = require('gulp');
 const uglify = require('gulp-uglify');
 const filter = require('gulp-filter');
 
-gulp.task('default', () => {
+exports.default = () => {
 	// Create filter instance inside task function
 	const f = filter(['**', '!*src/vendor'], {restore: true});
 
@@ -55,7 +55,7 @@ gulp.task('default', () => {
 		// Bring back the previously filtered out files (optional)
 		.pipe(f.restore)
 		.pipe(gulp.dest('dist'));
-});
+};
 ```
 
 ### Multiple filters
@@ -68,7 +68,7 @@ const less = require('gulp-less');
 const concat = require('gulp-concat');
 const filter = require('gulp-filter');
 
-gulp.task('default', () => {
+exports.default = () => {
 	const jsFilter = filter('**/*.js', {restore: true});
 	const lessFilter = filter('**/*.less', {restore: true});
 
@@ -80,7 +80,7 @@ gulp.task('default', () => {
 		.pipe(less())
 		.pipe(lessFilter.restore)
 		.pipe(gulp.dest('out/'));
-});
+};
 ```
 
 ### Restore as a file source
@@ -92,7 +92,7 @@ const gulp = require('gulp');
 const uglify = require('gulp-uglify');
 const filter = require('gulp-filter');
 
-gulp.task('default', () => {
+exports.default = () => {
 	const f = filter(['**', '!*src/vendor'], {restore: true, passthrough: false});
 
 	const stream = gulp.src('src/**/*.js')
@@ -106,13 +106,13 @@ gulp.task('default', () => {
 	f.restore.pipe(gulp.dest('vendor-dist'));
 
 	return stream;
-});
+};
 ```
 
 
 ## API
 
-### filter(pattern, [options])
+### filter(pattern, options?)
 
 Returns a [transform stream](https://nodejs.org/api/stream.html#stream_class_stream_transform) with a [.restore](#optionsrestore) property.
 
