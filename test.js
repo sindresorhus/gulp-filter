@@ -158,28 +158,6 @@ describe('filter()', () => {
 
 		stream.end();
 	});
-
-	it('should filter relative paths that leave current directory tree', cb => {
-		const stream = filter('**/test/**/*.js');
-		const buffer = [];
-		const gfile = path.join('..', '..', 'test', 'included.js');
-
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, gfile);
-			cb();
-		});
-
-		stream.write(new Vinyl({
-			path: gfile
-		}));
-
-		stream.end();
-	});
 });
 
 describe('filter.restore', () => {
@@ -328,6 +306,80 @@ describe('filter.restore', () => {
 		}
 
 		stream.on('finish', cb);
+		stream.end();
+	});
+});
+
+describe('filter outside cwd', () => {
+	it('should filter by glob files outside cwd if glob not starting with ..', cb => {
+		const stream = filter('**/**.js');
+		const buffer = [];
+
+		stream.on('data', file => {
+			buffer.push(file);
+		});
+
+		stream.on('end', () => {
+			assert.equal(buffer.length, 0);
+			cb();
+		});
+
+		stream.write(new Vinyl({
+			base: __dirname,
+			path: path.join(__dirname, '..', 'ignored.js')
+		}));
+		stream.end();
+	});
+
+	it('should filter by glob files outside cwd if glob starting with ..', cb => {
+		const stream = filter('../**/**.js');
+		const buffer = [];
+
+		stream.on('data', file => {
+			buffer.push(file);
+		});
+
+		stream.on('end', () => {
+			assert.equal(buffer.length, 1);
+			assert.equal(buffer[0].relative, '../included.js');
+			cb();
+		});
+
+		stream.write(new Vinyl({
+			base: process.cwd(),
+			path: path.join(process.cwd(), '..', 'included.js')
+		}));
+
+		stream.write(new Vinyl({
+			base: process.cwd(),
+			path: path.join(process.cwd(), '..', '..', 'ignored.js')
+		}));
+		stream.end();
+	});
+
+	it('should filter by glob files outside cwd if glob absolute path', cb => {
+		const stream = filter('/**/**.js');
+		const buffer = [];
+
+		stream.on('data', file => {
+			buffer.push(file);
+		});
+
+		stream.on('end', () => {
+			assert.equal(buffer.length, 1);
+			assert.equal(buffer[0].relative, '../included.js');
+			cb();
+		});
+
+		stream.write(new Vinyl({
+			base: process.cwd(),
+			path: path.join(process.cwd(), '..', 'included.js')
+		}));
+
+		stream.write(new Vinyl({
+			base: process.cwd(),
+			path: path.join(process.cwd(), '..', '..', 'ignored.mjs')
+		}));
 		stream.end();
 	});
 });

@@ -11,22 +11,27 @@ module.exports = (pattern, options = {}) => {
 		throw new PluginError('gulp-filter', '`pattern` should be a string, array, or function');
 	}
 
+	let absolutePatterns;
+	let relativePatterns;
+	if (Array.isArray(pattern)) {
+		absolutePatterns = pattern.filter(pattern => pattern.startsWith('/'));
+		relativePatterns = pattern.filter(pattern => !pattern.startsWith('/'));
+	}
+
 	return streamfilter((file, encoding, callback) => {
 		let match;
 
 		if (typeof pattern === 'function') {
 			match = pattern(file);
 		} else {
-			let relativePath = path.relative(file.cwd, file.path);
-
-			// If the path leaves the current working directory, then we need to
-			// resolve the absolute path so that the path can be properly matched
-			// by minimatch (via multimatch)
-			if (/^\.\.[\\/]/.test(relativePath)) {
-				relativePath = path.resolve(relativePath);
+			if (relativePatterns.length > 0) {
+				const relativePath = path.relative(file.cwd, file.path);
+				match = multimatch(relativePath, relativePatterns, options).length > 0;
 			}
 
-			match = multimatch(relativePath, pattern, options).length > 0;
+			if (absolutePatterns.length > 0 && !match) {
+				match = multimatch(file.path, absolutePatterns, options).length > 0;
+			}
 		}
 
 		callback(!match);
