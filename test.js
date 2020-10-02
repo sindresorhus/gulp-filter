@@ -310,76 +310,133 @@ describe('filter.restore', () => {
 	});
 });
 
-describe('filter outside cwd', () => {
-	it('should filter by glob files outside cwd if glob not starting with ..', cb => {
-		const stream = filter('**/**.js');
-		const buffer = [];
+// Base directory: /A/B
+// Files:
+// A /test.js
+// B /A/test.js
+// C /A/C/test.js
+// D /A/B/test.js
+// E /A/B/C/test.js
 
-		stream.on('data', file => {
-			buffer.push(file);
+// matching behaviour:
+// 1) starting with / - absolute path matching
+// 2) starting with .. - relative path mapping, cwd prepended
+// 3) starting with just path, like abcd/<...> or **/**.js - relative path mapping, cwd prepended
+// special case: matching starting with !
+
+describe('base matching', () => {
+	const testFilesPaths = [
+		'/test.js',
+		'/A/test.js',
+		'/A/C/test.js',
+		'/A/B/test.js',
+		'/A/B/C/test.js',
+		'/A/B/C/d.js',
+	];
+	const testFiles = testFilesPaths.map(path => new Vinyl({cwd: '/A/B', path}));
+
+	const testCases = [
+		{
+			description: 'Absolute filter by suffix',
+			pattern: ['/**/*.js'],
+			expectedFiles: testFiles
+		},
+		{
+			description: 'Absolute filter by suffix with prefix',
+			pattern: ['/A/**/*.js'],
+			expectedFiles: testFiles.slice(1)
+		},
+		{
+			description: 'Absolute filter by suffix with prefix equal to base',
+			pattern: ['/A/B/**/*.js'],
+			expectedFiles: testFiles.slice(3)
+		},
+		{
+			description: 'Relative filter',
+			pattern: ['**/*.js'],
+			expectedFiles: testFiles.slice(3)
+		},
+		{
+			description: 'Relative filter but explicit',
+			pattern: ['./**/*.js'],
+			expectedFiles: testFiles.slice(3)
+		},
+		{
+			description: 'Relative filter with .. prefix',
+			pattern: ['../**/*.js'],
+			expectedFiles: testFiles.slice(1)
+		},
+		{
+			description: 'Relative filter with path prefix',
+			pattern: ['C/**/*.js'],
+			expectedFiles: testFiles.slice(4)
+		},
+		{
+			description: 'Relative filter with path prefix, but then ..',
+			pattern: ['C/../**/*.js'],
+			expectedFiles: testFiles.slice(3)
+		},
+		{
+			description: 'Absolute filter starting with !',
+			pattern: ['!/**/*.js'],
+			expectedFiles: []
+		},
+		{
+			description: 'Absolute filter starting with !, filters out all test.js',
+			pattern: ['!/**/test.js'],
+			expectedFiles: [testFiles[5]]
+		},
+		{
+			description: 'Absolute filter starting with !, / omitted',
+			pattern: ['!**/test.js'],
+			expectedFiles: [testFiles[5]]
+		},
+		{
+			description: 'Filename filter starting with !',
+			pattern: ['!test.js'],
+			expectedFiles: [testFiles[5]]
+		},
+		{
+			description: 'Relative filter starting with !, . required',
+			pattern: ['!./**/**/*.js'],
+			expectedFiles: testFiles.slice(0, 3)
+		},
+		{
+			description: 'Mixed filters: absolute filter take files, when absolute negated filter rejects',
+			pattern: ['/A/**/*.js', '!/A/B/**/*.js'],
+			expectedFiles: testFiles.slice(1, 3)
+		},
+		{
+			description: 'Mixed filters: relative filter take files, when absolute negated filter rejects',
+			pattern: ['**/*.js', '!/A/B/C/**/*.js'],
+			expectedFiles: testFiles.slice(3, 4)
+		},
+		{
+			description: 'Mixed filters: absolute filter take files, when relative negated filter rejects',
+			pattern: ['/A/**/*.js', '!./C/**/*.js'],
+			expectedFiles: testFiles.slice(1, 4)
+		},
+		{
+			description: 'Mixed filters: relative filter take files, when relative negated filter rejects',
+			pattern: ['**/*.js', '!./C/**/*.js'],
+			expectedFiles: testFiles.slice(3, 4)
+		},
+	];
+	for (const testCase of testCases) {
+		it('Should ' + testCase.description, (cb) => {
+			const stream = filter(testCase.pattern);
+
+			testFiles.forEach(file => stream.write(file));
+
+			const files = [];
+			stream.on('data', file => {
+				files.push(file);
+			});
+			stream.on('end', () => {
+				assert.deepEqual(files.map(f => f.path), testCase.expectedFiles.map(f => f.path));
+				cb();
+			});
+			stream.end();
 		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 0);
-			cb();
-		});
-
-		stream.write(new Vinyl({
-			base: __dirname,
-			path: path.join(__dirname, '..', 'ignored.js')
-		}));
-		stream.end();
-	});
-
-	it('should filter by glob files outside cwd if glob starting with ..', cb => {
-		const stream = filter('../**/**.js');
-		const buffer = [];
-
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, '../included.js');
-			cb();
-		});
-
-		stream.write(new Vinyl({
-			base: process.cwd(),
-			path: path.join(process.cwd(), '..', 'included.js')
-		}));
-
-		stream.write(new Vinyl({
-			base: process.cwd(),
-			path: path.join(process.cwd(), '..', '..', 'ignored.js')
-		}));
-		stream.end();
-	});
-
-	it('should filter by glob files outside cwd if glob absolute path', cb => {
-		const stream = filter('/**/**.js');
-		const buffer = [];
-
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, '../included.js');
-			cb();
-		});
-
-		stream.write(new Vinyl({
-			base: process.cwd(),
-			path: path.join(process.cwd(), '..', 'included.js')
-		}));
-
-		stream.write(new Vinyl({
-			base: process.cwd(),
-			path: path.join(process.cwd(), '..', '..', 'ignored.mjs')
-		}));
-		stream.end();
-	});
-});
+	}
+})

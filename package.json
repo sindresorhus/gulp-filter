@@ -33,7 +33,8 @@
 	"dependencies": {
 		"multimatch": "^4.0.0",
 		"plugin-error": "^1.0.1",
-		"streamfilter": "^3.0.0"
+		"streamfilter": "^3.0.0",
+		"to-absolute-glob": "^2.0.2"
 	},
 	"devDependencies": {
 		"mocha": "^6.2.0",

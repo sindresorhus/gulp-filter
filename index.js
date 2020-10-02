@@ -1,21 +1,19 @@
 'use strict';
-const path = require('path');
 const PluginError = require('plugin-error');
 const multimatch = require('multimatch');
 const streamfilter = require('streamfilter');
+const toAbsoluteGlob = require('to-absolute-glob');
 
+/**
+ * @param {string | string[]|function(string):boolean} pattern
+ * @param {object} options
+ * @returns {Stream}
+ */
 module.exports = (pattern, options = {}) => {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
 
 	if (!Array.isArray(pattern) && typeof pattern !== 'function') {
 		throw new PluginError('gulp-filter', '`pattern` should be a string, array, or function');
-	}
-
-	let absolutePatterns;
-	let relativePatterns;
-	if (Array.isArray(pattern)) {
-		absolutePatterns = pattern.filter(pattern => pattern.startsWith('/'));
-		relativePatterns = pattern.filter(pattern => !pattern.startsWith('/'));
 	}
 
 	return streamfilter((file, encoding, callback) => {
@@ -24,14 +22,8 @@ module.exports = (pattern, options = {}) => {
 		if (typeof pattern === 'function') {
 			match = pattern(file);
 		} else {
-			if (relativePatterns.length > 0) {
-				const relativePath = path.relative(file.cwd, file.path);
-				match = multimatch(relativePath, relativePatterns, options).length > 0;
-			}
-
-			if (absolutePatterns.length > 0 && !match) {
-				match = multimatch(file.path, absolutePatterns, options).length > 0;
-			}
+			const patterns = pattern.map(pattern => toAbsoluteGlob(pattern, {cwd: file.cwd, root: options.root}));
+			match = multimatch(file.path, patterns, options);
 		}
 
 		callback(!match);
