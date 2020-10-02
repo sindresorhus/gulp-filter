@@ -1,6 +1,7 @@
 'use strict';
 const PluginError = require('plugin-error');
 const multimatch = require('multimatch');
+const path = require('path');
 const streamfilter = require('streamfilter');
 const toAbsoluteGlob = require('to-absolute-glob');
 
@@ -22,8 +23,10 @@ module.exports = (pattern, options = {}) => {
 		if (typeof pattern === 'function') {
 			match = pattern(file);
 		} else {
-			const patterns = pattern.map(pattern => toAbsoluteGlob(pattern, {cwd: file.cwd, root: options.root}));
-			match = multimatch(file.path, patterns, options);
+			const patterns = pattern.map(pattern => toAbsoluteGlob(pattern, {cwd: file.cwd, root: options.root}))
+				.map(pattern => pattern[0] === '!' ? '!' + path.resolve(pattern.slice(1)) : path.resolve(pattern));
+
+			match = multimatch(file.path, patterns, options).length > 0;
 		}
 
 		callback(!match);
