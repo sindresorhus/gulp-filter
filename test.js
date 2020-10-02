@@ -392,13 +392,8 @@ describe('base matching', () => {
 			expectedFiles: [testFiles[5]]
 		},
 		{
-			description: 'Filename filter starting with !',
-			pattern: ['!test.js'],
-			expectedFiles: [testFiles[5]]
-		},
-		{
 			description: 'Relative filter starting with !, . required',
-			pattern: ['!./**/**/*.js'],
+			pattern: ['!./**/*.js'],
 			expectedFiles: testFiles.slice(0, 3)
 		},
 		{
