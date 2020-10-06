@@ -322,7 +322,7 @@ describe('filter.restore', () => {
 // 1) starting with / - absolute path matching
 // 2) starting with .. - relative path mapping, cwd prepended
 // 3) starting with just path, like abcd/<...> or **/**.js - relative path mapping, cwd prepended
-// special case: matching starting with !
+// same rules for !
 
 describe('base matching', () => {
 	const testFilesPaths = [
@@ -378,22 +378,22 @@ describe('base matching', () => {
 		},
 		{
 			description: 'Absolute filter starting with !',
-			pattern: ['!/**/*.js'],
+			pattern: ['/**/*', '!/**/*.js'],
 			expectedFiles: []
 		},
 		{
 			description: 'Absolute filter starting with !, filters out all test.js',
-			pattern: ['!/**/test.js'],
+			pattern: ['/**/*', '!/**/test.js'],
 			expectedFiles: [testFiles[5]]
 		},
 		{
-			description: 'Absolute filter starting with !, / omitted',
-			pattern: ['!**/test.js'],
-			expectedFiles: [testFiles[5]]
+			description: 'Absolute filter starting with !, . omitted',
+			pattern: ['/**/*', '!**/*.js'],
+			expectedFiles: testFiles.slice(0, 3)
 		},
 		{
-			description: 'Relative filter starting with !, . required',
-			pattern: ['!./**/*.js'],
+			description: 'Relative filter starting with !, with .',
+			pattern: ['/**/*', '!./**/*.js'],
 			expectedFiles: testFiles.slice(0, 3)
 		},
 		{

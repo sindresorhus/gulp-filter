@@ -23,6 +23,8 @@ module.exports = (pattern, options = {}) => {
 		if (typeof pattern === 'function') {
 			match = pattern(file);
 		} else {
+			// path.resolve after toAbsoluteGlob for removing .. from path
+			// this is useful for ../A/B cases
 			const patterns = pattern.map(pattern => toAbsoluteGlob(pattern, {cwd: file.cwd, root: options.root}))
 				.map(pattern => pattern[0] === '!' ? '!' + path.resolve(pattern.slice(1)) : path.resolve(pattern));
 
