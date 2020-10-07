@@ -23,12 +23,30 @@ module.exports = (pattern, options = {}) => {
 		if (typeof pattern === 'function') {
 			match = pattern(file);
 		} else {
-			// Calling path.resolve after toAbsoluteGlob is required for removing .. from path
-			// this is useful for ../A/B cases
-			const patterns = pattern.map(pattern => toAbsoluteGlob(pattern, {cwd: file.cwd, root: options.root}))
-				.map(pattern => pattern[0] === '!' ? '!' + path.resolve(pattern.slice(1)) : path.resolve(pattern));
+			const base = path.dirname(file.path);
+			const patterns = pattern.map(pattern => {
+				// Filename only matching glob
+				// prepend full path
+				if (!pattern.includes('/')) {
+					if (pattern[0] === '!') {
+						return '!' + path.resolve(base, pattern.slice(1));
+					}
 
-			match = multimatch(file.path, patterns, options).length > 0;
+					return path.resolve(base, pattern);
+				}
+
+				pattern = toAbsoluteGlob(pattern, {cwd: file.cwd, root: options.root});
+
+				// Calling path.resolve after toAbsoluteGlob is required for removing .. from path
+				// this is useful for ../A/B cases
+				if (pattern[0] === '!') {
+					return '!' + path.resolve(pattern.slice(1));
+				}
+
+				return path.resolve(pattern);
+			});
+
+			match = multimatch(path.resolve(file.cwd, file.path), patterns, options).length > 0;
 		}
 
 		callback(!match);

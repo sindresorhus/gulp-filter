@@ -324,7 +324,7 @@ describe('filter.restore', () => {
 // 3) starting with just path, like abcd/<...> or **/**.js - relative path mapping, cwd prepended
 // same rules for !
 
-describe('base matching', () => {
+describe('path matching', () => {
 	const testFilesPaths = [
 		'/test.js',
 		'/A/test.js',
@@ -336,6 +336,16 @@ describe('base matching', () => {
 	const testFiles = testFilesPaths.map(path => new Vinyl({cwd: '/A/B', path}));
 
 	const testCases = [
+		{
+			description: 'Filename by suffix',
+			pattern: ['*.js'],
+			expectedFiles: testFiles
+		},
+		{
+			description: 'Filename by suffix, excluding d.js',
+			pattern: ['*.js', '!d.js'],
+			expectedFiles: testFiles.slice(0, -1)
+		},
 		{
 			description: 'Absolute filter by suffix',
 			pattern: ['/**/*.js'],
