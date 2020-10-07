@@ -331,7 +331,7 @@ describe('base matching', () => {
 		'/A/C/test.js',
 		'/A/B/test.js',
 		'/A/B/C/test.js',
-		'/A/B/C/d.js',
+		'/A/B/C/d.js'
 	];
 	const testFiles = testFilesPaths.map(path => new Vinyl({cwd: '/A/B', path}));
 
@@ -415,10 +415,11 @@ describe('base matching', () => {
 			description: 'Mixed filters: relative filter take files, when relative negated filter rejects',
 			pattern: ['**/*.js', '!./C/**/*.js'],
 			expectedFiles: testFiles.slice(3, 4)
-		},
+		}
 	];
+
 	for (const testCase of testCases) {
-		it('Should ' + testCase.description, (cb) => {
+		it('Should ' + testCase.description, cb => {
 			const stream = filter(testCase.pattern);
 
 			testFiles.forEach(file => stream.write(file));
@@ -434,4 +435,4 @@ describe('base matching', () => {
 			stream.end();
 		});
 	}
-})
+});
