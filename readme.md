@@ -1,4 +1,4 @@
-# gulp-filter [![Build Status](https://travis-ci.org/sindresorhus/gulp-filter.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-filter)
+# gulp-filter
 
 > Filter files in a [`vinyl`](https://github.com/gulpjs/vinyl) stream
 
