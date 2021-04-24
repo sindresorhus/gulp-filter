@@ -4,13 +4,11 @@
 
 Enables you to work on a subset of the original files by filtering them using glob patterns. When you're done and want all the original files back, you just use the `restore` stream.
 
-
 ## Install
 
 ```
 $ npm install --save-dev gulp-filter
 ```
-
 
 ## Usage
 
@@ -109,7 +107,6 @@ exports.default = () => {
 };
 ```
 
-
 ## API
 
 ### filter(pattern, options?)
@@ -138,14 +135,14 @@ Accepts [`minimatch` options](https://github.com/isaacs/minimatch#options).
 
 ##### restore
 
-Type: `boolean`<br>
+Type: `boolean`\
 Default: `false`
 
 Restore filtered files.
 
 ##### passthrough
 
-Type: `boolean`<br>
+Type: `boolean`\
 Default: `true`
 
 When set to `true`, filtered files are restored with a `stream.PassThrough`, otherwise, when set to `false`, filtered files are restored as a `stram.Readable`.

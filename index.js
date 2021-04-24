@@ -5,11 +5,6 @@ const multimatch = require('multimatch');
 const streamfilter = require('streamfilter');
 const toAbsoluteGlob = require('to-absolute-glob');
 
-/**
- * @param {string | string[]|function(string):boolean} pattern function or glob pattern or array of glob patterns to filter files
- * @param {object} options see minimatch options, also root option for path resolving
- * @returns {Stream} Transform stream of Vinyl files
- */
 module.exports = (pattern, options = {}) => {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
 
@@ -25,8 +20,7 @@ module.exports = (pattern, options = {}) => {
 		} else {
 			const base = path.dirname(file.path);
 			const patterns = pattern.map(pattern => {
-				// Filename only matching glob
-				// prepend full path
+				// Filename only matching glob, prepend full path.
 				if (!pattern.includes('/')) {
 					if (pattern[0] === '!') {
 						return '!' + path.resolve(base, pattern.slice(1));
@@ -37,8 +31,8 @@ module.exports = (pattern, options = {}) => {
 
 				pattern = toAbsoluteGlob(pattern, {cwd: file.cwd, root: options.root});
 
-				// Calling path.resolve after toAbsoluteGlob is required for removing .. from path
-				// this is useful for ../A/B cases
+				// Calling `path.resolve` after `toAbsoluteGlob` is required for removing `..` from path.
+				// This is useful for `../A/B` cases.
 				if (pattern[0] === '!') {
 					return '!' + path.resolve(pattern.slice(1));
 				}

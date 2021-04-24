@@ -3,7 +3,7 @@
 const path = require('path');
 const {strict: assert} = require('assert');
 const Vinyl = require('vinyl');
-const filter = require('.');
+const filter = require('./index.js');
 
 describe('filter()', () => {
 	it('should filter files', cb => {
@@ -318,12 +318,11 @@ describe('filter.restore', () => {
 // D /A/B/test.js
 // E /A/B/C/test.js
 
-// matching behaviour:
-// 1) starting with / - absolute path matching
-// 2) starting with .. - relative path mapping, cwd prepended
-// 3) starting with just path, like abcd/<...> or **/**.js - relative path mapping, cwd prepended
-// same rules for !
-
+// Matching behaviour:
+// 1) Starting with / - absolute path matching
+// 2) Starting with .. - relative path mapping, cwd prepended
+// 3) Starting with just path, like abcd/<...> or **/**.js - relative path mapping, cwd prepended
+// Same rules for `!`
 describe('path matching', () => {
 	const testFilesPaths = [
 		'/test.js',
@@ -333,6 +332,7 @@ describe('path matching', () => {
 		'/A/B/C/test.js',
 		'/A/B/C/d.js'
 	];
+
 	const testFiles = testFilesPaths.map(path => new Vinyl({cwd: '/A/B', path}));
 
 	const testCases = [
@@ -429,19 +429,24 @@ describe('path matching', () => {
 	];
 
 	for (const testCase of testCases) {
-		it('Should ' + testCase.description, cb => {
+		it(`Should ${testCase.description}`, cb => {
 			const stream = filter(testCase.pattern);
 
-			testFiles.forEach(file => stream.write(file));
+			for (const testFile of testFiles) {
+				stream.write(testFile);
+			}
 
 			const files = [];
+
 			stream.on('data', file => {
 				files.push(file);
 			});
+
 			stream.on('end', () => {
-				assert.deepEqual(files.map(f => f.path), testCase.expectedFiles.map(f => f.path));
+				assert.deepEqual(files.map(file => file.path), testCase.expectedFiles.map(file => file.path));
 				cb();
 			});
+
 			stream.end();
 		});
 	}

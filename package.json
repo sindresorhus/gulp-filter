@@ -4,13 +4,14 @@
 	"description": "Filter files in a `vinyl` stream",
 	"license": "MIT",
 	"repository": "sindresorhus/gulp-filter",
+	"funding": "https://github.com/sponsors/sindresorhus",
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
-		"url": "sindresorhus.com"
+		"url": "https://sindresorhus.com"
 	},
 	"engines": {
-		"node": ">=8"
+		"node": ">=12"
 	},
 	"scripts": {
 		"test": "xo && mocha"
@@ -31,15 +32,15 @@
 		"vinyl"
 	],
 	"dependencies": {
-		"multimatch": "^4.0.0",
+		"multimatch": "^5.0.0",
 		"plugin-error": "^1.0.1",
 		"streamfilter": "^3.0.0",
 		"to-absolute-glob": "^2.0.2"
 	},
 	"devDependencies": {
-		"mocha": "^6.2.0",
-		"vinyl": "^2.1.0",
-		"xo": "^0.24.0"
+		"mocha": "^8.3.2",
+		"vinyl": "^2.2.1",
+		"xo": "^0.39.1"
 	},
 	"peerDependencies": {
 		"gulp": ">=4"
