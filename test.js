@@ -158,28 +158,6 @@ describe('filter()', () => {
 
 		stream.end();
 	});
-
-	it('should filter relative paths that leave current directory tree', cb => {
-		const stream = filter('**/test/**/*.js');
-		const buffer = [];
-		const gfile = path.join('..', '..', 'test', 'included.js');
-
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, gfile);
-			cb();
-		});
-
-		stream.write(new Vinyl({
-			path: gfile
-		}));
-
-		stream.end();
-	});
 });
 
 describe('filter.restore', () => {
@@ -330,4 +308,141 @@ describe('filter.restore', () => {
 		stream.on('finish', cb);
 		stream.end();
 	});
+});
+
+// Base directory: /A/B
+// Files:
+// A /test.js
+// B /A/test.js
+// C /A/C/test.js
+// D /A/B/test.js
+// E /A/B/C/test.js
+
+// matching behaviour:
+// 1) starting with / - absolute path matching
+// 2) starting with .. - relative path mapping, cwd prepended
+// 3) starting with just path, like abcd/<...> or **/**.js - relative path mapping, cwd prepended
+// same rules for !
+
+describe('path matching', () => {
+	const testFilesPaths = [
+		'/test.js',
+		'/A/test.js',
+		'/A/C/test.js',
+		'/A/B/test.js',
+		'/A/B/C/test.js',
+		'/A/B/C/d.js'
+	];
+	const testFiles = testFilesPaths.map(path => new Vinyl({cwd: '/A/B', path}));
+
+	const testCases = [
+		{
+			description: 'Filename by suffix',
+			pattern: ['*.js'],
+			expectedFiles: testFiles
+		},
+		{
+			description: 'Filename by suffix, excluding d.js',
+			pattern: ['*.js', '!d.js'],
+			expectedFiles: testFiles.slice(0, -1)
+		},
+		{
+			description: 'Absolute filter by suffix',
+			pattern: ['/**/*.js'],
+			expectedFiles: testFiles
+		},
+		{
+			description: 'Absolute filter by suffix with prefix',
+			pattern: ['/A/**/*.js'],
+			expectedFiles: testFiles.slice(1)
+		},
+		{
+			description: 'Absolute filter by suffix with prefix equal to base',
+			pattern: ['/A/B/**/*.js'],
+			expectedFiles: testFiles.slice(3)
+		},
+		{
+			description: 'Relative filter',
+			pattern: ['**/*.js'],
+			expectedFiles: testFiles.slice(3)
+		},
+		{
+			description: 'Relative filter but explicit',
+			pattern: ['./**/*.js'],
+			expectedFiles: testFiles.slice(3)
+		},
+		{
+			description: 'Relative filter with .. prefix',
+			pattern: ['../**/*.js'],
+			expectedFiles: testFiles.slice(1)
+		},
+		{
+			description: 'Relative filter with path prefix',
+			pattern: ['C/**/*.js'],
+			expectedFiles: testFiles.slice(4)
+		},
+		{
+			description: 'Relative filter with path prefix, but then ..',
+			pattern: ['C/../**/*.js'],
+			expectedFiles: testFiles.slice(3)
+		},
+		{
+			description: 'Absolute filter starting with !',
+			pattern: ['/**/*', '!/**/*.js'],
+			expectedFiles: []
+		},
+		{
+			description: 'Absolute filter starting with !, filters out all test.js',
+			pattern: ['/**/*', '!/**/test.js'],
+			expectedFiles: [testFiles[5]]
+		},
+		{
+			description: 'Absolute filter starting with !, . omitted',
+			pattern: ['/**/*', '!**/*.js'],
+			expectedFiles: testFiles.slice(0, 3)
+		},
+		{
+			description: 'Relative filter starting with !, with .',
+			pattern: ['/**/*', '!./**/*.js'],
+			expectedFiles: testFiles.slice(0, 3)
+		},
+		{
+			description: 'Mixed filters: absolute filter take files, when absolute negated filter rejects',
+			pattern: ['/A/**/*.js', '!/A/B/**/*.js'],
+			expectedFiles: testFiles.slice(1, 3)
+		},
+		{
+			description: 'Mixed filters: relative filter take files, when absolute negated filter rejects',
+			pattern: ['**/*.js', '!/A/B/C/**/*.js'],
+			expectedFiles: testFiles.slice(3, 4)
+		},
+		{
+			description: 'Mixed filters: absolute filter take files, when relative negated filter rejects',
+			pattern: ['/A/**/*.js', '!./C/**/*.js'],
+			expectedFiles: testFiles.slice(1, 4)
+		},
+		{
+			description: 'Mixed filters: relative filter take files, when relative negated filter rejects',
+			pattern: ['**/*.js', '!./C/**/*.js'],
+			expectedFiles: testFiles.slice(3, 4)
+		}
+	];
+
+	for (const testCase of testCases) {
+		it('Should ' + testCase.description, cb => {
+			const stream = filter(testCase.pattern);
+
+			testFiles.forEach(file => stream.write(file));
+
+			const files = [];
+			stream.on('data', file => {
+				files.push(file);
+			});
+			stream.on('end', () => {
+				assert.deepEqual(files.map(f => f.path), testCase.expectedFiles.map(f => f.path));
+				cb();
+			});
+			stream.end();
+		});
+	}
 });

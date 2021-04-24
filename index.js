@@ -3,7 +3,13 @@ const path = require('path');
 const PluginError = require('plugin-error');
 const multimatch = require('multimatch');
 const streamfilter = require('streamfilter');
+const toAbsoluteGlob = require('to-absolute-glob');
 
+/**
+ * @param {string | string[]|function(string):boolean} pattern function or glob pattern or array of glob patterns to filter files
+ * @param {object} options see minimatch options, also root option for path resolving
+ * @returns {Stream} Transform stream of Vinyl files
+ */
 module.exports = (pattern, options = {}) => {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
 
@@ -17,16 +23,30 @@ module.exports = (pattern, options = {}) => {
 		if (typeof pattern === 'function') {
 			match = pattern(file);
 		} else {
-			let relativePath = path.relative(file.cwd, file.path);
+			const base = path.dirname(file.path);
+			const patterns = pattern.map(pattern => {
+				// Filename only matching glob
+				// prepend full path
+				if (!pattern.includes('/')) {
+					if (pattern[0] === '!') {
+						return '!' + path.resolve(base, pattern.slice(1));
+					}
 
-			// If the path leaves the current working directory, then we need to
-			// resolve the absolute path so that the path can be properly matched
-			// by minimatch (via multimatch)
-			if (/^\.\.[\\/]/.test(relativePath)) {
-				relativePath = path.resolve(relativePath);
-			}
+					return path.resolve(base, pattern);
+				}
 
-			match = multimatch(relativePath, pattern, options).length > 0;
+				pattern = toAbsoluteGlob(pattern, {cwd: file.cwd, root: options.root});
+
+				// Calling path.resolve after toAbsoluteGlob is required for removing .. from path
+				// this is useful for ../A/B cases
+				if (pattern[0] === '!') {
+					return '!' + path.resolve(pattern.slice(1));
+				}
+
+				return path.resolve(pattern);
+			});
+
+			match = multimatch(path.resolve(file.cwd, file.path), patterns, options).length > 0;
 		}
 
 		callback(!match);
