@@ -17,9 +17,9 @@ $ npm install --save-dev gulp-filter
 You may want to just filter the stream content:
 
 ```js
-const gulp = require('gulp');
-const uglify = require('gulp-uglify');
-const filter = require('gulp-filter');
+import gulp from 'gulp';
+import uglify from 'gulp-uglify';
+import filter from 'gulp-filter';
 
 exports.default = () => {
 	// Create filter instance inside task function
@@ -37,11 +37,11 @@ exports.default = () => {
 ### Restoring filtered files
 
 ```js
-const gulp = require('gulp');
-const uglify = require('gulp-uglify');
-const filter = require('gulp-filter');
+import gulp 'gulp';
+import uglify 'gulp-uglify';
+import filter 'gulp-filter';
 
-exports.default = () => {
+export default () => {
 	// Create filter instance inside task function
 	const f = filter(['**', '!*src/vendor'], {restore: true});
 
@@ -61,12 +61,12 @@ exports.default = () => {
 By combining and restoring different filters you can process different sets of files with a single pipeline.
 
 ```js
-const gulp = require('gulp');
-const less = require('gulp-less');
-const concat = require('gulp-concat');
-const filter = require('gulp-filter');
+import gulp from 'gulp';
+import less from 'gulp-less';
+import concat from 'gulp-concat';
+import filter from 'gulp-filter';
 
-exports.default = () => {
+export default () => {
 	const jsFilter = filter('**/*.js', {restore: true});
 	const lessFilter = filter('**/*.less', {restore: true});
 
@@ -86,11 +86,11 @@ exports.default = () => {
 You can restore filtered files in a different place and use it as a standalone source of files (ReadableStream). Setting the `passthrough` option to `false` allows you to do so.
 
 ```js
-const gulp = require('gulp');
-const uglify = require('gulp-uglify');
-const filter = require('gulp-filter');
+import gulp 'gulp';
+import uglify 'gulp-uglify';
+import filter 'gulp-filter';
 
-exports.default = () => {
+export default () => {
 	const f = filter(['**', '!*src/vendor'], {restore: true, passthrough: false});
 
 	const stream = gulp.src('src/**/*.js')
