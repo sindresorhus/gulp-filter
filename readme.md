@@ -6,8 +6,8 @@ Enables you to work on a subset of the original files by filtering them using gl
 
 ## Install
 
-```
-$ npm install --save-dev gulp-filter
+```sh
+npm install --save-dev gulp-filter
 ```
 
 ## Usage

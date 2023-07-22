@@ -11,8 +11,9 @@
 		"url": "https://sindresorhus.com"
 	},
 	"type": "module",
+	"exports": "./index.js",
 	"engines": {
-		"node": ">=18"
+		"node": ">=16"
 	},
 	"scripts": {
 		"test": "xo && mocha"

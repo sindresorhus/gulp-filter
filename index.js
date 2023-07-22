@@ -11,6 +11,7 @@ export default function plugin(pattern, options = {}) {
 		throw new PluginError('gulp-filter', '`pattern` should be a string, array, or function');
 	}
 
+	// TODO: Use `readableStream.filter()` when targeting Node.js 18.
 	return streamfilter((file, encoding, callback) => {
 		let match;
 
