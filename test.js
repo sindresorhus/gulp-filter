@@ -1,9 +1,11 @@
-'use strict';
 /* eslint-env mocha */
-const path = require('path');
-const {strict: assert} = require('assert');
-const Vinyl = require('vinyl');
-const filter = require('./index.js');
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import {strict as assert} from 'node:assert';
+import Vinyl from 'vinyl';
+import filter from './index.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('filter()', () => {
 	it('should filter files', cb => {
@@ -22,12 +24,12 @@ describe('filter()', () => {
 
 		stream.write(new Vinyl({
 			base: __dirname,
-			path: path.join(__dirname, 'included.js')
+			path: path.join(__dirname, 'included.js'),
 		}));
 
 		stream.write(new Vinyl({
 			base: __dirname,
-			path: path.join(__dirname, 'ignored.js')
+			path: path.join(__dirname, 'ignored.js'),
 		}));
 
 		stream.end();
@@ -50,12 +52,12 @@ describe('filter()', () => {
 
 			stream.write(new Vinyl({
 				base: __dirname,
-				path: path.join(__dirname, 'included.js')
+				path: path.join(__dirname, 'included.js'),
 			}));
 
 			stream.write(new Vinyl({
 				base: __dirname,
-				path: path.join(__dirname, 'ignored.js')
+				path: path.join(__dirname, 'ignored.js'),
 			}));
 
 			stream.end();
@@ -78,12 +80,12 @@ describe('filter()', () => {
 
 		stream.write(new Vinyl({
 			base: __dirname,
-			path: path.join(__dirname, 'nested', 'resource.js')
+			path: path.join(__dirname, 'nested', 'resource.js'),
 		}));
 
 		stream.write(new Vinyl({
 			base: __dirname,
-			path: path.join(__dirname, 'nested', 'resource.css')
+			path: path.join(__dirname, 'nested', 'resource.css'),
 		}));
 
 		stream.end();
@@ -148,12 +150,12 @@ describe('filter()', () => {
 		// Mimic `gulp.src('test/**/*.js')`
 		stream.write(new Vinyl({
 			base: path.join(__dirname, 'test'),
-			path: path.join(__dirname, 'test', 'included.js')
+			path: path.join(__dirname, 'test', 'included.js'),
 		}));
 
 		stream.write(new Vinyl({
 			base: __dirname,
-			path: path.join(__dirname, 'ignored.js')
+			path: path.join(__dirname, 'ignored.js'),
 		}));
 
 		stream.end();
@@ -330,7 +332,7 @@ describe('path matching', () => {
 		'/A/C/test.js',
 		'/A/B/test.js',
 		'/A/B/C/test.js',
-		'/A/B/C/d.js'
+		'/A/B/C/d.js',
 	];
 
 	const testFiles = testFilesPaths.map(path => new Vinyl({cwd: '/A/B', path}));
@@ -339,93 +341,93 @@ describe('path matching', () => {
 		{
 			description: 'Filename by suffix',
 			pattern: ['*.js'],
-			expectedFiles: testFiles
+			expectedFiles: testFiles,
 		},
 		{
 			description: 'Filename by suffix, excluding d.js',
 			pattern: ['*.js', '!d.js'],
-			expectedFiles: testFiles.slice(0, -1)
+			expectedFiles: testFiles.slice(0, -1),
 		},
 		{
 			description: 'Absolute filter by suffix',
 			pattern: ['/**/*.js'],
-			expectedFiles: testFiles
+			expectedFiles: testFiles,
 		},
 		{
 			description: 'Absolute filter by suffix with prefix',
 			pattern: ['/A/**/*.js'],
-			expectedFiles: testFiles.slice(1)
+			expectedFiles: testFiles.slice(1),
 		},
 		{
 			description: 'Absolute filter by suffix with prefix equal to base',
 			pattern: ['/A/B/**/*.js'],
-			expectedFiles: testFiles.slice(3)
+			expectedFiles: testFiles.slice(3),
 		},
 		{
 			description: 'Relative filter',
 			pattern: ['**/*.js'],
-			expectedFiles: testFiles.slice(3)
+			expectedFiles: testFiles.slice(3),
 		},
 		{
 			description: 'Relative filter but explicit',
 			pattern: ['./**/*.js'],
-			expectedFiles: testFiles.slice(3)
+			expectedFiles: testFiles.slice(3),
 		},
 		{
 			description: 'Relative filter with .. prefix',
 			pattern: ['../**/*.js'],
-			expectedFiles: testFiles.slice(1)
+			expectedFiles: testFiles.slice(1),
 		},
 		{
 			description: 'Relative filter with path prefix',
 			pattern: ['C/**/*.js'],
-			expectedFiles: testFiles.slice(4)
+			expectedFiles: testFiles.slice(4),
 		},
 		{
 			description: 'Relative filter with path prefix, but then ..',
 			pattern: ['C/../**/*.js'],
-			expectedFiles: testFiles.slice(3)
+			expectedFiles: testFiles.slice(3),
 		},
 		{
 			description: 'Absolute filter starting with !',
 			pattern: ['/**/*', '!/**/*.js'],
-			expectedFiles: []
+			expectedFiles: [],
 		},
 		{
 			description: 'Absolute filter starting with !, filters out all test.js',
 			pattern: ['/**/*', '!/**/test.js'],
-			expectedFiles: [testFiles[5]]
+			expectedFiles: [testFiles[5]],
 		},
 		{
 			description: 'Absolute filter starting with !, . omitted',
 			pattern: ['/**/*', '!**/*.js'],
-			expectedFiles: testFiles.slice(0, 3)
+			expectedFiles: testFiles.slice(0, 3),
 		},
 		{
 			description: 'Relative filter starting with !, with .',
 			pattern: ['/**/*', '!./**/*.js'],
-			expectedFiles: testFiles.slice(0, 3)
+			expectedFiles: testFiles.slice(0, 3),
 		},
 		{
 			description: 'Mixed filters: absolute filter take files, when absolute negated filter rejects',
 			pattern: ['/A/**/*.js', '!/A/B/**/*.js'],
-			expectedFiles: testFiles.slice(1, 3)
+			expectedFiles: testFiles.slice(1, 3),
 		},
 		{
 			description: 'Mixed filters: relative filter take files, when absolute negated filter rejects',
 			pattern: ['**/*.js', '!/A/B/C/**/*.js'],
-			expectedFiles: testFiles.slice(3, 4)
+			expectedFiles: testFiles.slice(3, 4),
 		},
 		{
 			description: 'Mixed filters: absolute filter take files, when relative negated filter rejects',
 			pattern: ['/A/**/*.js', '!./C/**/*.js'],
-			expectedFiles: testFiles.slice(1, 4)
+			expectedFiles: testFiles.slice(1, 4),
 		},
 		{
 			description: 'Mixed filters: relative filter take files, when relative negated filter rejects',
 			pattern: ['**/*.js', '!./C/**/*.js'],
-			expectedFiles: testFiles.slice(3, 4)
-		}
+			expectedFiles: testFiles.slice(3, 4),
+		},
 	];
 
 	for (const testCase of testCases) {

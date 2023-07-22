@@ -10,8 +10,9 @@
 		"email": "sindresorhus@gmail.com",
 		"url": "https://sindresorhus.com"
 	},
+	"type": "module",
 	"engines": {
-		"node": ">=12"
+		"node": ">=18"
 	},
 	"scripts": {
 		"test": "xo && mocha"
@@ -32,15 +33,15 @@
 		"vinyl"
 	],
 	"dependencies": {
-		"multimatch": "^5.0.0",
-		"plugin-error": "^1.0.1",
+		"multimatch": "^6.0.0",
+		"plugin-error": "^2.0.1",
 		"streamfilter": "^3.0.0",
-		"to-absolute-glob": "^2.0.2"
+		"to-absolute-glob": "^3.0.0"
 	},
 	"devDependencies": {
-		"mocha": "^8.3.2",
-		"vinyl": "^2.2.1",
-		"xo": "^0.39.1"
+		"mocha": "^10.2.0",
+		"vinyl": "^3.0.0",
+		"xo": "^0.55.0"
 	},
 	"peerDependencies": {
 		"gulp": ">=4"

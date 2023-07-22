@@ -1,11 +1,10 @@
-'use strict';
-const path = require('path');
-const PluginError = require('plugin-error');
-const multimatch = require('multimatch');
-const streamfilter = require('streamfilter');
-const toAbsoluteGlob = require('to-absolute-glob');
+import path from 'node:path';
+import PluginError from 'plugin-error';
+import multimatch from 'multimatch';
+import streamfilter from 'streamfilter';
+import toAbsoluteGlob from 'to-absolute-glob';
 
-module.exports = (pattern, options = {}) => {
+export default function plugin(pattern, options = {}) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
 
 	if (!Array.isArray(pattern) && typeof pattern !== 'function') {
@@ -47,6 +46,6 @@ module.exports = (pattern, options = {}) => {
 	}, {
 		objectMode: true,
 		passthrough: options.passthrough !== false,
-		restore: options.restore
+		restore: options.restore,
 	});
-};
+}
