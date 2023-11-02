@@ -21,7 +21,7 @@ import gulp from 'gulp';
 import uglify from 'gulp-uglify';
 import filter from 'gulp-filter';
 
-exports.default = () => {
+export default () => {
 	// Create filter instance inside task function
 	const f = filter(['**', '!*src/vendor']);
 

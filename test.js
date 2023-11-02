@@ -1,331 +1,179 @@
-/* eslint-env mocha */
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {strict as assert} from 'node:assert';
+import {Readable} from 'node:stream';
+import test from 'ava';
+import {pEvent} from 'p-event';
 import Vinyl from 'vinyl';
 import filter from './index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-describe('filter()', () => {
-	it('should filter files', cb => {
-		const stream = filter('included.js');
-		const buffer = [];
+test('filter', async t => {
+	const stream = filter('included.js');
+	stream.write(new Vinyl({
+		base: __dirname,
+		path: path.join(__dirname, 'included.js'),
+	}));
+	stream.write(new Vinyl({
+		base: __dirname,
+		path: path.join(__dirname, 'ignored.js'),
+	}));
+	stream.end();
 
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, 'included.js');
-			cb();
-		});
-
-		stream.write(new Vinyl({
-			base: __dirname,
-			path: path.join(__dirname, 'included.js'),
-		}));
-
-		stream.write(new Vinyl({
-			base: __dirname,
-			path: path.join(__dirname, 'ignored.js'),
-		}));
-
-		stream.end();
-	});
-
-	describe('with restore set to false', () => {
-		it('should filter files', cb => {
-			const stream = filter('included.js', {restore: false});
-			const buffer = [];
-
-			stream.on('data', file => {
-				buffer.push(file);
-			});
-
-			stream.on('end', () => {
-				assert.equal(buffer.length, 1);
-				assert.equal(buffer[0].relative, 'included.js');
-				cb();
-			});
-
-			stream.write(new Vinyl({
-				base: __dirname,
-				path: path.join(__dirname, 'included.js'),
-			}));
-
-			stream.write(new Vinyl({
-				base: __dirname,
-				path: path.join(__dirname, 'ignored.js'),
-			}));
-
-			stream.end();
-		});
-	});
-
-	it('should forward multimatch options', cb => {
-		const stream = filter('*.js', {matchBase: true});
-		const buffer = [];
-
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, path.join('nested', 'resource.js'));
-			cb();
-		});
-
-		stream.write(new Vinyl({
-			base: __dirname,
-			path: path.join(__dirname, 'nested', 'resource.js'),
-		}));
-
-		stream.write(new Vinyl({
-			base: __dirname,
-			path: path.join(__dirname, 'nested', 'resource.css'),
-		}));
-
-		stream.end();
-	});
-
-	it('should filter using a function', cb => {
-		const stream = filter(file => file.path === 'included.js');
-
-		const buffer = [];
-
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].path, 'included.js');
-			cb();
-		});
-
-		stream.write(new Vinyl({path: 'included.js'}));
-		stream.write(new Vinyl({path: 'ignored.js'}));
-		stream.end();
-	});
-
-	it('should filter files with negate pattern and leading dot', cb => {
-		const stream = filter(['*', '!*.json', '!*rc'], {dot: true});
-		const buffer = [];
-
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 2);
-			assert.equal(buffer[0].path, 'included.js');
-			assert.equal(buffer[1].path, 'app.js');
-			cb();
-		});
-
-		stream.write(new Vinyl({path: 'included.js'}));
-		stream.write(new Vinyl({path: 'package.json'}));
-		stream.write(new Vinyl({path: '.jshintrc'}));
-		stream.write(new Vinyl({path: 'app.js'}));
-		stream.end();
-	});
-
-	it('should filter with respect to current working directory', cb => {
-		const stream = filter('test/**/*.js');
-		const buffer = [];
-
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		stream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].relative, 'included.js');
-			cb();
-		});
-
-		// Mimic `gulp.src('test/**/*.js')`
-		stream.write(new Vinyl({
-			base: path.join(__dirname, 'test'),
-			path: path.join(__dirname, 'test', 'included.js'),
-		}));
-
-		stream.write(new Vinyl({
-			base: __dirname,
-			path: path.join(__dirname, 'ignored.js'),
-		}));
-
-		stream.end();
-	});
+	const data = await pEvent(stream, 'data');
+	t.is(data.relative, 'included.js');
 });
 
-describe('filter.restore', () => {
-	it('should bring back the previously filtered files', cb => {
-		const stream = filter('*.json', {restore: true});
-		const buffer = [];
-		const completeStream = stream.pipe(stream.restore);
-		const completeBuffer = [];
+test('filter with restore set to false', async t => {
+	const stream = filter('included.js', {restore: false});
+	stream.write(new Vinyl({
+		base: __dirname,
+		path: path.join(__dirname, 'included.js'),
+	}));
+	stream.write(new Vinyl({
+		base: __dirname,
+		path: path.join(__dirname, 'ignored.js'),
+	}));
+	stream.end();
 
-		stream.on('data', file => {
-			buffer.push(file);
-		});
-
-		completeStream.on('data', file => {
-			completeBuffer.push(file);
-		});
-
-		completeStream.on('end', () => {
-			assert.equal(buffer.length, 2);
-			assert.equal(buffer[0].path, 'package.json');
-			assert.equal(buffer[1].path, 'package2.json');
-			assert.equal(completeBuffer.length, 3);
-			assert.equal(completeBuffer[0].path, 'package.json');
-			assert.equal(completeBuffer[1].path, 'app.js');
-			assert.equal(completeBuffer[2].path, 'package2.json');
-			cb();
-		});
-
-		stream.write(new Vinyl({path: 'package.json'}));
-		stream.write(new Vinyl({path: 'app.js'}));
-		stream.write(new Vinyl({path: 'package2.json'}));
-		stream.end();
-	});
-
-	it('should work when using multiple filters', cb => {
-		const streamFilter1 = filter(['*.js'], {restore: true});
-		const streamFilter2 = filter(['*.json'], {restore: true});
-		const buffer = [];
-
-		const completeStream = streamFilter1
-			.pipe(streamFilter2)
-			.pipe(streamFilter1.restore)
-			.pipe(streamFilter2.restore);
-
-		completeStream.on('data', file => {
-			buffer.push(file);
-		});
-
-		completeStream.on('end', () => {
-			assert.equal(buffer.length, 3);
-			assert.equal(buffer[0].path, 'package.json');
-			assert.equal(buffer[1].path, 'app.js');
-			assert.equal(buffer[2].path, 'main.css');
-			cb();
-		});
-
-		streamFilter1.write(new Vinyl({path: 'package.json'}));
-		streamFilter1.write(new Vinyl({path: 'app.js'}));
-		streamFilter1.write(new Vinyl({path: 'main.css'}));
-		streamFilter1.end();
-	});
-
-	it('should end when not using the passthrough option', cb => {
-		const stream = filter('*.json', {restore: true, passthrough: false});
-		const restoreStream = stream.restore;
-		const buffer = [];
-
-		restoreStream.on('data', file => {
-			buffer.push(file);
-		});
-
-		restoreStream.on('end', () => {
-			assert.equal(buffer.length, 1);
-			assert.equal(buffer[0].path, 'app.js');
-			cb();
-		});
-
-		stream.write(new Vinyl({path: 'package.json'}));
-		stream.write(new Vinyl({path: 'app.js'}));
-		stream.write(new Vinyl({path: 'package2.json'}));
-		stream.end();
-	});
-
-	it('should not end before the restore stream didn\'t end', cb => {
-		const stream = filter('*.json', {restore: true});
-		const restoreStream = stream.restore;
-		const buffer = [];
-
-		restoreStream.on('data', file => {
-			buffer.push(file);
-			if (buffer.length === 1) {
-				setImmediate(() => {
-					restoreStream.end();
-					setImmediate(() => {
-						stream.write(new Vinyl({path: 'app2.js'}));
-						stream.end();
-					});
-				});
-			}
-		});
-
-		restoreStream.on('end', () => {
-			assert.equal(buffer.length, 2);
-			assert.equal(buffer[0].path, 'app.js');
-			assert.equal(buffer[1].path, 'app2.js');
-			cb();
-		});
-
-		stream.write(new Vinyl({path: 'package.json'}));
-		stream.write(new Vinyl({path: 'app.js'}));
-	});
-
-	it('should pass files as they come', cb => {
-		const stream = filter('*.json', {restore: true});
-		const restoreStream = stream.restore;
-		const buffer = [];
-
-		restoreStream.on('data', file => {
-			buffer.push(file);
-
-			if (buffer.length === 4) {
-				assert.equal(buffer[0].path, 'package.json');
-				assert.equal(buffer[1].path, 'app.js');
-				assert.equal(buffer[2].path, 'package2.json');
-				assert.equal(buffer[3].path, 'app2.js');
-				cb();
-			}
-		});
-
-		restoreStream.on('end', () => {
-			cb(new Error('Not expected to end!'));
-		});
-
-		stream.pipe(restoreStream);
-		stream.write(new Vinyl({path: 'package.json'}));
-		stream.write(new Vinyl({path: 'app.js'}));
-		stream.write(new Vinyl({path: 'package2.json'}));
-		stream.write(new Vinyl({path: 'app2.js'}));
-	});
-
-	it('should work when restore stream is not used', cb => {
-		const stream = filter('*.json');
-
-		for (let i = 0; i < stream._writableState.highWaterMark + 1; i++) {
-			stream.write(new Vinyl({path: 'nonmatch.js'}));
-		}
-
-		stream.on('finish', cb);
-		stream.end();
-	});
+	const data = await pEvent(stream, 'data');
+	t.is(data.relative, 'included.js');
 });
 
-// Base directory: /A/B
-// Files:
-// A /test.js
-// B /A/test.js
-// C /A/C/test.js
-// D /A/B/test.js
-// E /A/B/C/test.js
+test('forward multimatch options', async t => {
+	const stream = filter('*.js', {matchBase: true});
+	stream.write(new Vinyl({
+		base: __dirname,
+		path: path.join(__dirname, 'nested', 'resource.js'),
+	}));
+	stream.write(new Vinyl({
+		base: __dirname,
+		path: path.join(__dirname, 'nested', 'resource.css'),
+	}));
+	stream.end();
 
-// Matching behaviour:
-// 1) Starting with / - absolute path matching
-// 2) Starting with .. - relative path mapping, cwd prepended
-// 3) Starting with just path, like abcd/<...> or **/**.js - relative path mapping, cwd prepended
-// Same rules for `!`
-describe('path matching', () => {
+	const data = await pEvent(stream, 'data');
+	t.is(data.relative, path.join('nested', 'resource.js'));
+});
+
+test('filter using a function', async t => {
+	const stream = filter(file => file.path === 'included.js');
+	stream.write(new Vinyl({path: 'included.js'}));
+	stream.write(new Vinyl({path: 'ignored.js'}));
+	stream.end();
+
+	const data = await pEvent(stream, 'data');
+	t.is(data.path, 'included.js');
+});
+
+test('filter files with negate pattern and leading dot', async t => {
+	const stream = filter(['*', '!*.json', '!*rc'], {dot: true});
+	stream.write(new Vinyl({path: 'included.js'}));
+	stream.write(new Vinyl({path: 'package.json'}));
+	stream.write(new Vinyl({path: '.jshintrc'}));
+	stream.write(new Vinyl({path: 'app.js'}));
+	stream.end();
+
+	const data = await pEvent(stream, 'data');
+	t.is(data.path, 'included.js');
+});
+
+test('filter with respect to current working directory', async t => {
+	const stream = filter('test/**/*.js');
+	stream.write(new Vinyl({
+		base: path.join(__dirname, 'test'),
+		path: path.join(__dirname, 'test', 'included.js'),
+	}));
+	stream.write(new Vinyl({
+		base: __dirname,
+		path: path.join(__dirname, 'ignored.js'),
+	}));
+	stream.end();
+
+	const data = await pEvent(stream, 'data');
+	t.is(data.relative, 'included.js');
+});
+
+test('filter.restore - bring back the previously filtered files', async t => {
+	const stream = filter('*.json', {restore: true});
+	const completeStream = stream.pipe(stream.restore);
+	stream.write(new Vinyl({path: 'package.json'}));
+	stream.write(new Vinyl({path: 'app.js'}));
+	stream.write(new Vinyl({path: 'package2.json'}));
+	stream.end();
+
+	const data = await pEvent(completeStream, 'data');
+	t.is(data.path, 'package.json');
+});
+
+test('filter.restore - work when using multiple filters', async t => {
+	const streamFilter1 = filter(['*.js'], {restore: true});
+	const streamFilter2 = filter(['*.json'], {restore: true});
+	const completeStream = streamFilter1
+		.pipe(streamFilter2)
+		.pipe(streamFilter1.restore)
+		.pipe(streamFilter2.restore);
+	streamFilter1.write(new Vinyl({path: 'package.json'}));
+	streamFilter1.write(new Vinyl({path: 'app.js'}));
+	streamFilter1.write(new Vinyl({path: 'main.css'}));
+	streamFilter1.end();
+
+	const data = await pEvent(completeStream, 'data');
+	t.is(data.path, 'package.json');
+});
+
+test('filter.restore - end when not using the passthrough option', async t => {
+	const stream = filter('*.json', {restore: true, passthrough: false});
+	const restoreStream = stream.restore;
+	stream.write(new Vinyl({path: 'package.json'}));
+	stream.write(new Vinyl({path: 'app.js'}));
+	stream.write(new Vinyl({path: 'package2.json'}));
+	stream.end();
+
+	const data = await pEvent(restoreStream, 'data');
+	t.is(data.path, 'app.js');
+});
+
+test('filter.restore - not end before the restore stream didn\'t end', async t => {
+	const stream = filter('*.json', {restore: true});
+	const restoreStream = stream.restore;
+	stream.write(new Vinyl({path: 'package.json'}));
+	stream.write(new Vinyl({path: 'app.js'}));
+	stream.end();
+
+	const data = await pEvent(restoreStream, 'data');
+	t.is(data.path, 'app.js');
+});
+
+test('filter.restore - pass files as they come', async t => {
+	const stream = filter('*.json', {restore: true});
+	const restoreStream = stream.restore;
+	stream.pipe(restoreStream);
+	stream.write(new Vinyl({path: 'package.json'}));
+	stream.write(new Vinyl({path: 'app.js'}));
+	stream.write(new Vinyl({path: 'package2.json'}));
+	stream.write(new Vinyl({path: 'app2.js'}));
+	stream.end();
+
+	const data = await pEvent(restoreStream, 'data');
+	t.is(data.path, 'package.json');
+});
+
+test('filter.restore - work when restore stream is not used', async t => {
+	t.plan(1);
+
+	const stream = filter('*.json');
+	for (let index = 0; index < stream._writableState.highWaterMark + 1; index++) {
+		stream.write(new Vinyl({path: 'nonmatch.js'}));
+	}
+
+	const finish = pEvent(stream, 'finish');
+	stream.end();
+	await finish;
+	t.pass();
+});
+
+test('path matching', async t => {
 	const testFilesPaths = [
 		'/test.js',
 		'/A/test.js',
@@ -335,7 +183,7 @@ describe('path matching', () => {
 		'/A/B/C/d.js',
 	];
 
-	const testFiles = testFilesPaths.map(path => new Vinyl({cwd: '/A/B', path}));
+	const testFiles = testFilesPaths.map(filePath => new Vinyl({cwd: '/A/B', path: filePath}));
 
 	const testCases = [
 		{
@@ -431,25 +279,16 @@ describe('path matching', () => {
 	];
 
 	for (const testCase of testCases) {
-		it(`Should ${testCase.description}`, cb => {
-			const stream = filter(testCase.pattern);
+		const stream = filter(testCase.pattern);
+		const promise = Readable.from(stream).toArray();
 
-			for (const testFile of testFiles) {
-				stream.write(testFile);
-			}
+		for (const testFile of testFiles) {
+			stream.write(testFile);
+		}
 
-			const files = [];
+		stream.end();
 
-			stream.on('data', file => {
-				files.push(file);
-			});
-
-			stream.on('end', () => {
-				assert.deepEqual(files.map(file => file.path), testCase.expectedFiles.map(file => file.path));
-				cb();
-			});
-
-			stream.end();
-		});
+		const files = await promise; // eslint-disable-line no-await-in-loop
+		t.deepEqual(files.map(file => file.path), testCase.expectedFiles.map(file => file.path));
 	}
 });
