@@ -1,8 +1,10 @@
+import process from 'node:process';
 import path from 'node:path';
 import PluginError from 'plugin-error';
 import multimatch from 'multimatch';
 import streamfilter from 'streamfilter';
 import toAbsoluteGlob from 'to-absolute-glob';
+import slash from 'slash';
 
 export default function plugin(pattern, options = {}) {
 	pattern = typeof pattern === 'string' ? [pattern] : pattern;
@@ -19,7 +21,8 @@ export default function plugin(pattern, options = {}) {
 			match = pattern(file);
 		} else {
 			const base = path.dirname(file.path);
-			const patterns = pattern.map(pattern => {
+
+			let patterns = pattern.map(pattern => {
 				// Filename only matching glob, prepend full path.
 				if (!pattern.includes('/')) {
 					if (pattern[0] === '!') {
@@ -39,6 +42,10 @@ export default function plugin(pattern, options = {}) {
 
 				return path.resolve(pattern);
 			});
+
+			if (process.platform === 'win32') {
+				patterns = patterns.map(pattern => slash(pattern));
+			}
 
 			match = multimatch(path.resolve(file.cwd, file.path), patterns, options).length > 0;
 		}
