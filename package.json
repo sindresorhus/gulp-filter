@@ -14,7 +14,7 @@
 	"exports": "./index.js",
 	"sideEffects": false,
 	"engines": {
-		"node": ">=20"
+		"node": ">=20.19"
 	},
 	"scripts": {
 		"test": "xo && ava"
@@ -46,7 +46,7 @@
 		"gulp": "^5.0.1",
 		"p-event": "^7.1.0",
 		"vinyl": "^3.0.1",
-		"xo": "^0.56.0"
+		"xo": "^2.0.2"
 	},
 	"peerDependencies": {
 		"gulp": ">=4"
