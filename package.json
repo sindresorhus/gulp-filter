@@ -14,7 +14,7 @@
 	"exports": "./index.js",
 	"sideEffects": false,
 	"engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
 	"scripts": {
 		"test": "xo && ava"
@@ -35,7 +35,7 @@
 		"vinyl"
 	],
 	"dependencies": {
-		"multimatch": "^7.0.0",
+		"multimatch": "^8.0.0",
 		"plugin-error": "^2.0.1",
 		"slash": "^5.1.0",
 		"streamfilter": "^3.0.0",
