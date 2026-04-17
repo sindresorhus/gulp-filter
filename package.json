@@ -35,10 +35,10 @@
 		"vinyl"
 	],
 	"dependencies": {
+		"easy-transform-stream": "^1.0.1",
 		"multimatch": "^8.0.0",
 		"plugin-error": "^2.0.1",
 		"slash": "^5.1.0",
-		"streamfilter": "^3.0.0",
 		"to-absolute-glob": "^3.0.0"
 	},
 	"devDependencies": {
