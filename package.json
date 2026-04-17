@@ -14,7 +14,7 @@
 	"exports": "./index.js",
 	"sideEffects": false,
 	"engines": {
-		"node": ">=18"
+		"node": ">=22"
 	},
 	"scripts": {
 		"test": "xo && ava"
@@ -35,21 +35,21 @@
 		"vinyl"
 	],
 	"dependencies": {
-		"multimatch": "^7.0.0",
+		"multimatch": "^8.0.0",
 		"plugin-error": "^2.0.1",
 		"slash": "^5.1.0",
 		"streamfilter": "^3.0.0",
 		"to-absolute-glob": "^3.0.0"
 	},
 	"devDependencies": {
-		"ava": "^5.3.1",
-		"gulp": "^4.0.2",
-		"p-event": "^6.0.0",
-		"vinyl": "^3.0.0",
-		"xo": "^0.56.0"
+		"ava": "^7.0.0",
+		"gulp": "^5.0.1",
+		"p-event": "^7.1.0",
+		"vinyl": "^3.0.1",
+		"xo": "^2.0.2"
 	},
 	"peerDependencies": {
-		"gulp": ">=4"
+		"gulp": ">=5"
 	},
 	"peerDependenciesMeta": {
 		"gulp": {
